@@ -1,0 +1,685 @@
+#include "EnginePCH.h"
+#include "Editor/Viewports/ViewportsPanel.h"
+#include "Editor/EditorUI/EditorStyle.h"
+#include "Editor/Viewports/LevelEditorViewport.h"
+#include "Engine/GameViewportClient.h"
+
+#include "Core/StatOverlay.h"
+#include "Core/Stats/LightweightStats.h"
+#include "Render/RenderCommand.h"
+
+#include <algorithm>
+#include <cassert>
+#include <format>
+
+#include "Core/Stats/EditorStats.h"
+#include "UObject/UObjectIterator.h"
+#include "Render/GPUStats.h"
+#include "Render/SkinningStats.h"
+#include "Render/SkeletalMeshObject.h"
+#include "Components/SkinnedMeshComponent.h"
+#include "Components/ParticleSystemComponent.h"
+#include "Particles/ParticleEmitterInstance.h"
+#include "Editor/Gizmo/Gizmo.h"
+#include "Input/InputSystem.h"
+
+#include "Components/SkeletalMeshComponent.h"
+#include "Physics/BodyInstance.h"
+#include "Physics/ConstraintInstance.h"
+#include "Physics/PhysicsStats.h"
+
+
+namespace {
+constexpr float SplitterThickness = 6.0f;
+// 분할선 색은 테마에 따라 바뀌므로 쓰는 자리에서 팔레트를 읽는다.
+
+// Stat Overlay
+constexpr float StatOverlayMargin = 8.0f;
+constexpr float StatOverlayPadding = 6.0f;
+// 통계 글자는 3D 화면 위의 어두운 Scrim 위에 쓰므로 테마와 상관없는 색을 쓴다.
+constexpr ImU32 StatOverlayBackgroundColor = EditorColor::Scrim;
+constexpr ImU32 TitleColor = EditorColor::OverlayTextAccent;
+constexpr ImU32 ValueColor = EditorColor::OverlayText;
+} // namespace
+
+// 네 View의 렌더 타깃을 최소 크기로 초기화한다.
+bool FViewportsPanel::Init() {
+	for (int32 i = 0; i < 4; ++i) {
+		ViewportClients[i] = MakeUnique<FLevelEditorViewportClient>();
+		ViewportClients[i]->SetViewIndex(i);
+		ViewportClients[i]->Resize(1, 1);
+	}
+
+	// 초기 시점 설정
+	ViewportClients[0]->SetViewportType(ELevelViewportType::Perspective);
+	ViewportClients[1]->SetViewportType(ELevelViewportType::Top);
+	ViewportClients[2]->SetViewportType(ELevelViewportType::Front);
+	ViewportClients[3]->SetViewportType(ELevelViewportType::Right);
+
+	return true;
+}
+
+// 패널의 프레임 갱신 인터페이스에서 뷰포트 단축키(Q/W/E/R, Space)로 기즈모 모드를 전환한다.
+void FViewportsPanel::Tick(float DeltaTime)
+{
+	(void)DeltaTime;
+	const ImGuiIO& IO = ImGui::GetIO();
+	if (Gizmo && WasRenderedThisFrame() && (bFocused || IsHovered()) && !IO.WantTextInput &&
+		!IO.KeyCtrl && !IO.KeyAlt && !IO.KeyShift &&
+		!ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel) &&
+		!FInputSystem::IsMouseDown(EMouseButton::Right) &&
+		!FInputSystem::IsMouseDown(EMouseButton::Left) &&
+		!FInputSystem::IsMouseDown(EMouseButton::Middle) &&
+		!Gizmo->IsUsing() &&
+		(!GameViewportClient || ActiveViewIndex != GameViewportIndex))
+	{
+		if (FInputSystem::IsKeyPressed(EKeyCode::Q))
+		{
+			Gizmo->SetMode(EGizmoMode::Select);
+		}
+		else if (FInputSystem::IsKeyPressed(EKeyCode::W))
+		{
+			Gizmo->SetMode(EGizmoMode::Location);
+		}
+		else if (FInputSystem::IsKeyPressed(EKeyCode::E))
+		{
+			Gizmo->SetMode(EGizmoMode::Rotation);
+		}
+		else if (FInputSystem::IsKeyPressed(EKeyCode::R))
+		{
+			Gizmo->SetMode(EGizmoMode::Scale);
+		}
+		else if (FInputSystem::IsKeyPressed(EKeyCode::Space))
+		{
+			const EGizmoMode NextMode = (Gizmo->GetMode() == EGizmoMode::Select)
+				? EGizmoMode::Location
+				: static_cast<EGizmoMode>((static_cast<int>(Gizmo->GetMode()) + 1) % 3);
+			Gizmo->SetMode(NextMode);
+		}
+	}
+}
+
+// Core Rect에 맞춰 View 활성 상태와 타깃 크기를 갱신한다.
+void FViewportsPanel::SetView(const int32 ViewIndex, const FRect &Rect,
+			const bool bActive) {
+	assert(ViewIndex >= 0 && ViewIndex < 4);
+	FEditorViewportClient *Client = ViewportClients[ViewIndex].get();
+	if (!Client)
+		return;
+
+	Client->SetRect(Rect);
+	const bool bSlotActive = bActive && Rect.Width > 0.0f && Rect.Height > 0.0f;
+	Client->SetActive(bSlotActive);
+	if (!bSlotActive)
+		return;
+
+	const uint32 Width = static_cast<uint32>(std::max(1.0f, Rect.Width));
+	const uint32 Height = static_cast<uint32>(std::max(1.0f, Rect.Height));
+	if (Width != Client->GetWidth() || Height != Client->GetHeight())
+		Client->Resize(Width, Height);
+}
+
+// 마우스 위치에서 패널 원점을 빼 로컬 좌표로 바꾼다.
+FVector2 FViewportsPanel::GetLocalMousePosition() const {
+	POINT Cursor{};
+	const ImVec2 Mouse = ::GetCursorPos(&Cursor)
+		? ImVec2(static_cast<float>(Cursor.x), static_cast<float>(Cursor.y))
+		: ImGui::GetMousePos();
+	return {Mouse.x - ContentOrigin.x, Mouse.y - ContentOrigin.y};
+}
+
+// 엔진 입력 처리는 ImGui NewFrame보다 먼저 실행되므로 현재 OS 커서로 버튼
+// 영역을 검사한다.
+bool FViewportsPanel::IsHovered() const {
+	// 패널 경계(도킹 분할선, 창 크기 조절 테두리)와 뷰포트 분할선은 ImGui 항목이라 hover 상태가 된다.
+	// 누르는 프레임에는 아직 Active가 아니므로 hover도 함께 막아야 클릭이 뷰포트 카메라 조작으로 새지 않는다.
+	if (ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel) ||
+		ImGui::IsAnyItemActive() || ImGui::IsAnyItemHovered()) return false;
+	POINT ToolbarCursor{};
+	if (::GetCursorPos(&ToolbarCursor))
+		for (const auto& Rect : ToolbarRects)
+			if (Rect.Width > 0.0f && ToolbarCursor.x >= Rect.X && ToolbarCursor.x < Rect.X + Rect.Width &&
+				ToolbarCursor.y >= Rect.Y && ToolbarCursor.y < Rect.Y + Rect.Height) return false;
+	const FVector2 Mouse = GetLocalMousePosition();
+	return bHovered && Mouse.X >= 0.0f && Mouse.Y >= 0.0f &&
+		Mouse.X < ContentSize.x && Mouse.Y < ContentSize.y;
+}
+
+// 누적 가로 Splitter 이동량을 반환하고 초기화한다.
+float FViewportsPanel::ConsumeHorizontalDrag() {
+	const float Result = PendingHorizontalDrag;
+	PendingHorizontalDrag = 0.0f;
+	return Result;
+}
+
+// 누적 세로 Splitter 이동량을 반환하고 초기화한다.
+float FViewportsPanel::ConsumeVerticalDrag() {
+	const float Result = PendingVerticalDrag;
+	PendingVerticalDrag = 0.0f;
+	return Result;
+}
+
+// 대기 Layout 요청을 한 번 반환하고 플래그를 지운다.
+bool FViewportsPanel::ConsumeLayoutRequest(ELayoutMode &OutMode,
+			int32 &OutSingleViewIndex) {
+	if (!bHasLayoutRequest)
+		return false;
+	OutMode = RequestedLayoutMode;
+	OutSingleViewIndex = RequestedSingleViewIndex;
+	CurrentLayoutMode = RequestedLayoutMode;
+	CurrentSingleViewIndex = RequestedSingleViewIndex;
+	bHasLayoutRequest = false;
+	return true;
+}
+
+
+
+// View Texture와 Splitter·Layout·Preset UI를 그리고 요청을 기록한다.
+void FViewportsPanel::OnRender() {
+	LastRenderedFrame = ImGui::GetFrameCount();
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0.0f, 0.0f});
+	ImGui::Begin("Viewports", GetOpenFlag(),
+			ImGuiWindowFlags_NoScrollbar |
+			ImGuiWindowFlags_NoScrollWithMouse |
+			ImGuiWindowFlags_NoTitleBar);
+
+	ContentOrigin = ImGui::GetCursorScreenPos();
+	ContentSize = ImGui::GetContentRegionAvail();
+	ContentSize.x = std::max(1.0f, ContentSize.x);
+	ContentSize.y = std::max(1.0f, ContentSize.y);
+	bHovered = ImGui::IsWindowHovered();
+	bFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+
+	// 전체 캔버스를 한 번 확보한 뒤 각 렌더 타깃을 창 DrawList에 직접 그린다.
+	// Image 항목 네 개를 따로 배치하면 ImGui 레이아웃과 클리핑 상태가 삽입 순서에
+	// 영향을 받아, Core가 올바른 사각형을 줘도 아래쪽 행이 잘릴 수 있다.
+	ImGui::Dummy(ContentSize);
+	ImDrawList* DrawList = ImGui::GetWindowDrawList();
+	DrawList->PushClipRect(ContentOrigin,
+		{ContentOrigin.x + ContentSize.x, ContentOrigin.y + ContentSize.y}, true);
+	for (int32 ViewIndex = 0; ViewIndex < 4; ++ViewIndex)
+	{
+		FEditorViewportClient* Client = ViewportClients[ViewIndex].get();
+		if (!Client || !Client->IsActive())
+			continue;
+
+		const FRect &Rect = Client->GetRect();
+		const ImVec2 ViewMin{ContentOrigin.x + Rect.X,
+			ContentOrigin.y + Rect.Y};
+		const ImVec2 ViewMax{ViewMin.x + Rect.Width,
+			ViewMin.y + Rect.Height};
+
+		const bool bGameViewport = GameViewportClient && ViewIndex == GameViewportIndex;
+		if (bGameViewport)
+		{
+			GameViewportClient->SetRect(FRect{
+				ViewMin.x,
+				ViewMin.y,
+				Rect.Width,
+				Rect.Height
+				});
+		}
+
+
+		if (ViewIndex == 0 && bShowNoCamera && !bGameViewport)
+		{
+			// 메인 원근 뷰포트 영역을 어두운 회색으로 채움
+			DrawList->AddRectFilled(ViewMin, ViewMax, EditorColor::BgHeader);
+			const char* WarningText = "No Camera";
+			ImVec2 TextSize = ImGui::CalcTextSize(WarningText);
+			ImVec2 CenterPos{
+				ViewMin.x + (Rect.Width - TextSize.x) * 0.5f,
+				ViewMin.y + (Rect.Height - TextSize.y) * 0.5f
+			};
+			DrawList->AddText(CenterPos, EditorColor::TextSecondary, WarningText);
+			continue;
+		}
+
+		FTexture2D* DisplayTarget = bGameViewport
+			? GameViewportClient->GetColorTarget()
+			: Client->GetColorTarget();
+		if (!DisplayTarget || !DisplayTarget->GetSRV())
+			continue;
+
+		DrawList->AddImage(DisplayTarget->GetSRV(), ViewMin, ViewMax);
+
+		// 마우스 클릭 시 활성 뷰포트 설정
+		const bool bViewHovered = bHovered && ImGui::IsMouseHoveringRect(ViewMin, ViewMax);
+		if (bViewHovered && (ImGui::IsMouseClicked(ImGuiMouseButton_Left) ||
+				ImGui::IsMouseClicked(ImGuiMouseButton_Right) ||
+				ImGui::IsMouseClicked(ImGuiMouseButton_Middle))) {
+			ActiveViewIndex = ViewIndex;
+			ImGui::SetWindowFocus();
+			bFocused = true;
+		}
+	}
+	DrawList->PopClipRect();
+
+	// 레이아웃마다 분할선 구성이 다르다. 끌 수 있는 선은 세로선(Horizontal 비율)과 가로선(Vertical 비율) 두 종류뿐이다.
+	FLayoutSplitter Splitters[4]{};
+	const int32 SplitterCount = CurrentLayoutMode == ELayoutMode::Single ? 0
+		: ComputeLayoutSplitters(CurrentLayoutMode, SplitRatio, { ContentSize.x, ContentSize.y }, Splitters);
+	if (SplitterCount > 0) {
+		ImVec2 Mins[4], Maxs[4];
+		bool bVerticalHovered = false;    // 세로선 위
+		bool bHorizontalHovered = false;  // 가로선 위
+		for (int32 Index = 0; Index < SplitterCount; ++Index)
+		{
+			const FLayoutSplitter& Splitter = Splitters[Index];
+			const bool bVerticalLine = Splitter.Axis == EDragAxis::Horizontal;
+			// 끌 수 없는 경계선은 얇게 그린다.
+			const float Thickness = Splitter.bDraggable ? SplitterThickness : 2.0f;
+			Mins[Index] = bVerticalLine
+				? ImVec2{ ContentOrigin.x + Splitter.Position - Thickness * 0.5f, ContentOrigin.y + Splitter.Start }
+				: ImVec2{ ContentOrigin.x + Splitter.Start, ContentOrigin.y + Splitter.Position - Thickness * 0.5f };
+			Maxs[Index] = bVerticalLine
+				? ImVec2{ Mins[Index].x + Thickness, ContentOrigin.y + Splitter.End }
+				: ImVec2{ ContentOrigin.x + Splitter.End, Mins[Index].y + Thickness };
+			if (!Splitter.bDraggable) continue;
+			ImGui::SetCursorScreenPos(Mins[Index]);
+			ImGui::PushID(Index);
+			ImGui::InvisibleButton("##ViewportSplitter",
+				{ std::max(1.0f, Maxs[Index].x - Mins[Index].x), std::max(1.0f, Maxs[Index].y - Mins[Index].y) });
+			ImGui::PopID();
+			if (bHovered && ImGui::IsMouseHoveringRect(Mins[Index], Maxs[Index]))
+				(bVerticalLine ? bVerticalHovered : bHorizontalHovered) = true;
+		}
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+			bDraggingVerticalSplitter = bVerticalHovered;
+			bDraggingHorizontalSplitter = bHorizontalHovered;
+		}
+		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+			bDraggingVerticalSplitter = false;
+			bDraggingHorizontalSplitter = false;
+		}
+
+		const bool bVerticalHighlighted = bDraggingVerticalSplitter || bVerticalHovered;
+		const bool bHorizontalHighlighted = bDraggingHorizontalSplitter || bHorizontalHovered;
+		for (int32 Index = 0; Index < SplitterCount; ++Index)
+		{
+			const bool bVerticalLine = Splitters[Index].Axis == EDragAxis::Horizontal;
+			const bool bHighlighted = Splitters[Index].bDraggable &&
+				(bVerticalLine ? bVerticalHighlighted : bHorizontalHighlighted);
+			DrawList->AddRectFilled(Mins[Index], Maxs[Index], bHighlighted ? EditorColor::AccentHover : EditorColor::BgRaised);
+		}
+
+		if (bDraggingVerticalSplitter)
+			PendingHorizontalDrag += ImGui::GetIO().MouseDelta.x;
+		if (bDraggingHorizontalSplitter)
+			PendingVerticalDrag += ImGui::GetIO().MouseDelta.y;
+
+		if (bVerticalHighlighted && bHorizontalHighlighted)
+			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+		else if (bVerticalHighlighted)
+			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+		else if (bHorizontalHighlighted)
+			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
+	} else {
+		bDraggingVerticalSplitter = false;
+		bDraggingHorizontalSplitter = false;
+	}
+
+	for (int32 ViewIndex = 0; ViewIndex < 4; ++ViewIndex)
+	{
+		ToolbarRects[ViewIndex] = {};
+		ToolbarHeights[ViewIndex] = 0.0f;
+		DrawViewportToolbar(ViewIndex);
+	}
+
+	// 마지막으로 선택된 뷰포트만 오버레이
+	for (int32 ViewIndex = 0; ViewIndex < 4; ++ViewIndex) {
+		if (ViewIndex != ActiveViewIndex)
+			continue;
+		FEditorViewportClient *Client = ViewportClients[ViewIndex].get();
+		if (!Client || !Client->IsActive() || Client->IsLightCulling())
+			continue;
+		DrawStatOverlay(DrawList, { ContentOrigin.x + Client->GetRect().X, ContentOrigin.y + Client->GetRect().Y }, Client);
+	}
+
+	ImGui::End();
+	ImGui::PopStyleVar();
+}
+
+// 항목별 줄을 모아 한 번에 배경과 텍스트를 그린다.
+void FViewportsPanel::DrawStatOverlay(ImDrawList* DrawList, const ImVec2& ViewMin, FEditorViewportClient* Client) const
+{
+	if (!DrawList || !FStatOverlay::IsAnyEnabled())
+		return;
+
+	constexpr float BytesPerMegabyte = 1024.0f * 1024.0f;
+
+	// 제목은 UE처럼 노란색, 값은 흰색으로 구분한다.
+	struct FStatLine {
+		FString Text;
+		ImU32 Color;
+	};
+	TArray<FStatLine> Lines;
+
+	if (FStatOverlay::IsEnabled(EStatFlags::FPS)) {
+		Lines.Add({"FPS", TitleColor});
+		Lines.Add(
+				{std::format("  {:.1f} fps", FStatOverlay::GetFPS()), ValueColor});
+		Lines.Add({std::format("  {:.2f} ms", FStatOverlay::GetFrameTimeMs()),
+			ValueColor});
+	}
+
+	if (FStatOverlay::IsEnabled(EStatFlags::Memory)) {
+		Lines.Add({"Memory", TitleColor});
+		Lines.Add({std::format("  Object  {:.2f} MB ({} allocs)",
+			static_cast<double>(
+			FStatOverlay::GetObjectAllocationBytes()) /
+			BytesPerMegabyte,
+			FStatOverlay::GetObjectAllocationCount()),
+			ValueColor});
+		Lines.Add({std::format("  Process {:.2f} MB",
+			static_cast<double>(
+			FStatOverlay::GetProcessWorkingSetBytes()) /
+			BytesPerMegabyte),
+			ValueColor});
+	}
+
+	struct FProfileStatLine {
+		FString Text;
+		ImU32 Color;
+		FString Values[3];
+	};
+	TArray<FProfileStatLine> ProfileLines;
+	if (FStatOverlay::IsEnabled(EStatFlags::Profile)) {
+		ProfileLines.Add({"CPU Profile (ms)", TitleColor, {"Last", "Avg", "Max"}});
+
+		for (const auto &[Name, Data] : FStatRegistry::GetAll()) {
+			if (TStatId{Name} == EditorStats::STAT_PickingTime)
+				continue;
+
+			FProfileStatLine Line{"  " + FString(Name), ValueColor};
+			Line.Values[0] = std::format("{:.2f}", Data.GetLastMs());
+			Line.Values[1] = std::format("{:.2f}", Data.GetRecentAverageMs());
+			Line.Values[2] = std::format("{:.2f}", Data.GetMaxMs());
+			ProfileLines.Add(Line);
+		}
+
+		// GPU stat은 따로 모이므로 같이 보여 줘야 DOF 같은 패스 시간을 볼 수 있다
+		ProfileLines.Add({"GPU Profile (ms, ~4 frames behind)", TitleColor, {"Last", "Avg", "Max"}});
+		for (const auto &[Name, Data] : FStatRegistry::GetAllGPU()) {
+			FProfileStatLine Line{"  " + FString(Name), ValueColor};
+			Line.Values[0] = std::format("{:.2f}", Data.GetLastMs());
+			Line.Values[1] = std::format("{:.2f}", Data.GetRecentAverageMs());
+			Line.Values[2] = std::format("{:.2f}", Data.GetMaxMs());
+			ProfileLines.Add(Line);
+		}
+	}
+
+	if (const FCycleStatData *PickingData =
+					FStatRegistry::Find(EditorStats::STAT_PickingTime)) {
+		ProfileLines.Add({"Picking", TitleColor});
+		FProfileStatLine Line{"  Time (ms)", ValueColor};
+		Line.Values[0] = std::format("Last: {:.2f}", PickingData->GetLastMs());
+		Line.Values[1] = std::format("Attempts: {}", PickingData->CallCount);
+		Line.Values[2] = std::format("Acc.: {:.2f}", PickingData->GetTotalMs());
+		ProfileLines.Add(Line);
+	}
+
+FSceneRenderData& RenderData = Client->GetRenderData();
+const FRenderStats& Stats = RenderData.RenderStats;
+	if (FStatOverlay::IsEnabled(EStatFlags::Light)) {
+		Lines.Add({ "Light", TitleColor });
+		Lines.Add({ std::format("  Total Lights {} ", Stats.DirectionalCount + Stats.PointCount + Stats.SpotCount), ValueColor });
+		Lines.Add({ std::format("  Directional {} ", Stats.DirectionalCount), ValueColor });
+		Lines.Add({ std::format("  Point {} ", Stats.PointCount), ValueColor });
+		Lines.Add({ std::format("  Spot {} ", Stats.SpotCount), ValueColor });
+
+		Lines.Add({ "Shadow Atlas", TitleColor });
+		Lines.Add({ std::format("  Atlas Capacity  {:.2f} MB",
+			static_cast<double>(Stats.AtlasCapacity) /
+			BytesPerMegabyte),
+			ValueColor });
+		Lines.Add({ std::format("  Shadow Tiles  {:.2f} MB",
+			static_cast<double>(Stats.ShadowTiles) /
+			BytesPerMegabyte),
+			ValueColor });
+		Lines.Add({ std::format("  Tile Usage  {:.1f} %",
+			static_cast<double>(Stats.ShadowTiles) /
+			static_cast<double>(Stats.AtlasCapacity) * 100),
+			ValueColor });
+		Lines.Add({ std::format("  Shadow Views  Redrawn {} / Cached {}",
+			Stats.ShadowViewsRedrawn, Stats.ShadowViewsCached),
+			ValueColor });
+		Lines.Add({ std::format("  ShadowLightsSkippedOutsideView {}",
+			Stats.ShadowLightsSkippedOutsideView),
+			ValueColor });
+		Lines.Add({ std::format("  ShadowLightsSkippedNoReceiver {}",
+			Stats.ShadowLightsSkippedNoReceiver),
+			ValueColor });
+		Lines.Add({ std::format("  ShadowLightsSkippedNoCaster {}",
+			Stats.ShadowLightsSkippedNoCaster),
+			ValueColor });
+		Lines.Add({ std::format("  ShadowCastersSkippedSmall {}",
+			Stats.ShadowCastersSkippedSmall),
+			ValueColor });
+
+		if (RenderData.CascadeShadowCount > 0)
+		{
+			Lines.Add({ "Cascaded Shadow Map", TitleColor });
+			Lines.Add({ std::format("  Cascades {}", RenderData.CascadeShadowCount), ValueColor });
+
+			// 첫 번째 Directional의 그림자 뷰들 = 캐스케이드들
+			const uint32 DirOffset = RenderData.GetDirectionalLightOffset();
+			const bool bHasDirShadow = RenderData.GetDirectionalLightCount() > 0 &&
+				DirOffset < static_cast<uint32>(RenderData.VisibleLightShadowViews.Num()) &&
+				RenderData.VisibleLightShadowViews[DirOffset] != FSceneRenderData::InvalidShadowView;
+
+			float PrevDistance = 0.0f;
+			for (uint32 c = 0; c < RenderData.CascadeShadowCount; ++c)
+			{
+				const float Far = RenderData.CascadeShadowDistances[c];
+				FString Texel = "-";
+				if (bHasDirShadow)
+				{
+					const uint32 ShadowIdx = RenderData.VisibleLightShadowViews[DirOffset] + c;
+					if (ShadowIdx < uint32(RenderData.LightShadows.Num()))
+						Texel = std::format("{:.3f}", RenderData.LightShadows[ShadowIdx].WorldUnitsPerTexel);
+				}
+				Lines.Add({ std::format("  C{}  {:.1f} ~ {:.1f}   texel {}", c, PrevDistance, Far, Texel), ValueColor });
+				PrevDistance = Far;
+			}
+			Lines.Add({ std::format("  Cascade Views  Redrawn {} / Cached {}",
+				Stats.CascadeViewsRedrawn, Stats.CascadeViewsCached), ValueColor });
+		}
+	}
+	if (FStatOverlay::IsEnabled(EStatFlags::Decal)) {
+		Lines.Add({ "Decal", TitleColor });
+		Lines.Add({ std::format("  Decals {}", Stats.DecalCount), ValueColor });
+		Lines.Add({ std::format("  Decals Rendered {}", Stats.DecalsRendered), ValueColor });
+		Lines.Add({ std::format("  Decal Draw Calls {}", Stats.DecalDrawCalls), ValueColor });
+		Lines.Add({ std::format("  Decal Items Tested {}", Stats.DecalItemsTested), ValueColor });
+		Lines.Add({ std::format("  Decal Items Culled {}", Stats.DecalItemsTested - Stats.DecalDrawCalls), ValueColor });
+		Lines.Add({ std::format("  Decal Broad Tested {}", Stats.DecalBroadTests), ValueColor });
+		Lines.Add({ std::format("  Decal Narrow Tested {}", Stats.DecalNarrowTested), ValueColor });
+		Lines.Add({ std::format("  Decal OBBTree Tested {}", Stats.DecalOBBTreeTested), ValueColor });
+
+		const FCycleStatData* DecalGPU = FStatRegistry::FindGPU(GPUStats::STAT_GPU_Decal);
+		Lines.Add({ DecalGPU
+			? std::format("  Decal GPU {:.3f} ms (avg, max {:.3f})", DecalGPU->GetRecentAverageMs(), DecalGPU->GetMaxMs())
+			: FString("  Decal GPU -"), ValueColor });
+	}
+
+	if (FStatOverlay::IsEnabled(EStatFlags::Skinning)) {
+		uint32 NumCPU = 0, NumGPU = 0;
+		uint64 CPUVerts = 0, GPUVerts = 0, GPUBones = 0;
+		for (TObjectIterator<USkinnedMeshComponent> It; It; ++It) {
+			if (!It->IsRegistered()) continue;
+			const FSkeletalMeshObject* Obj = It->GetMeshObject();
+			const USkeletalMesh* Mesh = It->GetSkeletalMesh();
+			if (!Obj || !Mesh) continue;
+			const uint64 Verts = Mesh->GetRenderData().LODRenderData[0].BindVertices.Num();
+			if (Obj->GetBoneMatrixBuffer()) { ++NumGPU; GPUVerts += Verts; GPUBones += Mesh->GetNumBones(); }
+			else { ++NumCPU; CPUVerts += Verts; }
+		}
+		const double UploadKB = (CPUVerts * sizeof(FVertex) + GPUBones * sizeof(FMatrix)) / 1024.0;
+
+		Lines.Add({ std::format("Skinning [{}]{}", USkinnedMeshComponent::bUseGPUSkinning ? "GPU" : "CPU",
+								USkinnedMeshComponent::bForceSkinUpdate ? "  (force update)" : ""), TitleColor });
+		Lines.Add({ std::format("  Components  CPU {} / GPU {}", NumCPU, NumGPU), ValueColor });
+		Lines.Add({ std::format("  Vertices {}   Bones(GPU) {}", CPUVerts + GPUVerts, GPUBones), ValueColor });
+		Lines.Add({ std::format("  Upload {:.1f} KB/frame", UploadKB), ValueColor });
+
+		// CPU와 GPU를 같은 형식(Last/Avg/Max)으로 그린다. 찾는 함수만 다르다.
+		auto AddRows = [&](const char* Title, std::initializer_list<TStatId> Ids, auto Find) {
+			ProfileLines.Add({ Title, TitleColor, { "Last", "Avg", "Max" } });
+			for (TStatId Id : Ids) {
+				FProfileStatLine Line{ "  " + FString(Id.GetName()), ValueColor };
+				if (const FCycleStatData* D = Find(Id)) {
+					Line.Values[0] = std::format("{:.2f}", D->GetLastMs());
+					Line.Values[1] = std::format("{:.2f}", D->GetRecentAverageMs());
+					Line.Values[2] = std::format("{:.2f}", D->GetMaxMs());
+				}
+				else {
+					Line.Values[0] = Line.Values[1] = Line.Values[2] = "-";
+				}
+				ProfileLines.Add(Line);
+			}
+			};
+		AddRows("Skinning CPU (ms)",
+			{ SkinningStats::STAT_BoneTransforms, SkinningStats::STAT_CpuSkinning,
+			  SkinningStats::STAT_SkinUpload,     SkinningStats::STAT_BoneUpload,
+			  SkinningStats::STAT_CpuSkinningPicking },
+			[](TStatId Id) { return FStatRegistry::Find(Id); });
+		AddRows("Skinning GPU (ms, ~4 frames behind)",
+			{ GPUStats::STAT_GPU_ShadowDepths, GPUStats::STAT_GPU_DepthPrepass, GPUStats::STAT_GPU_ForwardOpaque },
+			[](TStatId Id) { return FStatRegistry::FindGPU(Id); });
+		Lines.Add({ std::format("  GPU dropped frames {}", FRealtimeGPUProfiler::GetDroppedFrames()), ValueColor });
+	}
+
+	if (FStatOverlay::IsEnabled(EStatFlags::Particle)) {
+		const UWorld* World = Client->GetWorld();
+		uint32 NumComponents = 0, NumEmitters = 0;
+		uint64 Active = 0, Capacity = 0, MemoryBytes = 0;
+		for (TObjectIterator<UParticleSystemComponent> It; It; ++It) {
+			if (!It->IsRegistered() || It->GetWorld() != World) continue;
+			++NumComponents;
+			for (const FParticleEmitterInstance* Instance : It->GetEmitterInstances()) {
+				if (!Instance) continue;
+				++NumEmitters;
+				Active += Instance->ActiveParticles;
+				Capacity += Instance->MaxActiveParticles;
+				MemoryBytes += Instance->GetParticleMemoryBytes();
+			}
+		}
+
+		Lines.Add({ "Particle", TitleColor });
+		Lines.Add({ std::format("  Components {}   Emitters {}", NumComponents, NumEmitters), ValueColor });
+		Lines.Add({ std::format("  Particles {} / {} ({:.1f} %)", Active, Capacity,
+			Capacity > 0 ? 100.0 * static_cast<double>(Active) / static_cast<double>(Capacity) : 0.0), ValueColor });
+		Lines.Add({ std::format("  Memory {:.1f} KB", static_cast<double>(MemoryBytes) / 1024.0), ValueColor });
+	}
+
+	if (FStatOverlay::IsEnabled(EStatFlags::Physics)) {
+		const UWorld* World = Client->GetWorld();
+		uint32 NumComponents = 0, NumRagdolls = 0;
+		uint32 NumBodies = 0, NumSimBodies = 0, NumConstraints = 0;
+		for (TObjectIterator<USkeletalMeshComponent> It; It; ++It) {
+			if (!It->IsRegistered() || It->GetWorld() != World || It->Bodies.IsEmpty()) continue;
+			++NumComponents;
+			if (It->IsRagdollSimulating()) ++NumRagdolls;
+			for (const FBodyInstance* Body : It->Bodies) {
+				if (!Body || !Body->IsValidBodyInstance()) continue;
+				++NumBodies;
+				if (Body->IsSimulatingPhysics()) ++NumSimBodies;
+			}
+			for (const FConstraintInstance* CI : It->Constraints)
+				if (CI) ++NumConstraints;
+		}
+
+		Lines.Add({ "Physics", TitleColor });
+		Lines.Add({ std::format("  Skeletal {}   Ragdoll {}", NumComponents, NumRagdolls), ValueColor });
+		Lines.Add({ std::format("  Bodies {}   Simulating {}", NumBodies, NumSimBodies), ValueColor });
+		Lines.Add({ std::format("  Constraints {}", NumConstraints), ValueColor });
+
+		// Skinning 블록과 같은 형식(Last/Avg/Max). 그쪽 AddRows는 블록 안 지역 람다라 따로 둔다
+		ProfileLines.Add({ "Physics CPU (ms)", TitleColor, { "Last", "Avg", "Max" } });
+		for (TStatId Id : { PhysicsStats::STAT_PhysSimulate, PhysicsStats::STAT_PhysSyncActors,
+			PhysicsStats::STAT_PhysNotifies, PhysicsStats::STAT_RagdollInit,
+			PhysicsStats::STAT_RagdollKinematic, PhysicsStats::STAT_RagdollBonePose }) {
+			FProfileStatLine Line{ "  " + FString(Id.GetName()), ValueColor };
+			if (const FCycleStatData* D = FStatRegistry::Find(Id)) {
+				Line.Values[0] = std::format("{:.2f}", D->GetLastMs());
+				Line.Values[1] = std::format("{:.2f}", D->GetRecentAverageMs());
+				Line.Values[2] = std::format("{:.2f}", D->GetMaxMs());
+			}
+			else {
+				Line.Values[0] = Line.Values[1] = Line.Values[2] = "-";
+			}
+			ProfileLines.Add(Line);
+		}
+	}
+
+	if (Lines.Num() == 0 && ProfileLines.Num() == 0)
+		return;
+
+	// 제어 위젯 한 줄 아래에서 시작해 Combo와 겹치지 않게 한다.
+	const float LineHeight = ImGui::GetTextLineHeight();
+	const ImVec2 Origin{ViewMin.x + StatOverlayMargin,
+			ViewMin.y + StatOverlayMargin + ToolbarHeights[Client->GetViewIndex()] + StatOverlayMargin};
+
+	// 최대 너비 계산
+	float MaxWidth = 0.0f;
+	for (int32 Index = 0; Index < Lines.Num(); ++Index)
+		MaxWidth =
+				std::max(MaxWidth, ImGui::CalcTextSize(Lines[Index].Text.c_str()).x);
+
+	const float MinValueWidth = ImGui::CalcTextSize("00000.00").x;
+	float NameWidth = 0.0f;
+	float ValueWidths[3] = {MinValueWidth, MinValueWidth, MinValueWidth};
+	bool bHasColumns = false;
+
+	for (const FProfileStatLine &Line : ProfileLines) {
+		const float TextWidth = ImGui::CalcTextSize(Line.Text.c_str()).x;
+		bHasColumns = true;
+		NameWidth = std::max(NameWidth, TextWidth);
+		for (int32 Column = 0; Column < 3; ++Column)
+			ValueWidths[Column] = std::max(
+					MinValueWidth, ImGui::CalcTextSize(Line.Values[Column].c_str()).x);
+	}
+
+	float ColumnRight[3]{};
+	if (bHasColumns) {
+		float Width = NameWidth;
+		for (int32 Column = 0; Column < 3; ++Column) {
+			Width += ImGui::GetFontSize() + ValueWidths[Column];
+			ColumnRight[Column] = Origin.x + Width;
+		}
+		MaxWidth = std::max(MaxWidth, Width);
+	}
+
+	const ImVec2 BackgroundMin{Origin.x - StatOverlayPadding,
+			Origin.y - StatOverlayPadding};
+	const ImVec2 BackgroundMax{
+			Origin.x + MaxWidth + StatOverlayPadding,
+			Origin.y +
+					LineHeight * static_cast<float>(Lines.Num() + ProfileLines.Num()) +
+					StatOverlayPadding};
+	DrawList->AddRectFilled(BackgroundMin, BackgroundMax,
+			StatOverlayBackgroundColor, 4.0f);
+
+	// Lines 그리기
+	for (int32 Index = 0; Index < Lines.Num(); ++Index) {
+		DrawList->AddText(
+				{Origin.x, Origin.y + LineHeight * static_cast<float>(Index)},
+				Lines[Index].Color, Lines[Index].Text.c_str());
+	}
+
+	// ProfileLines 그리기
+	for (int32 Index = 0; Index < ProfileLines.Num(); ++Index) {
+		const FProfileStatLine &Line = ProfileLines[Index];
+		const float Y =
+				Origin.y + LineHeight * static_cast<float>(Lines.Num() + Index);
+		DrawList->AddText({Origin.x, Y}, Line.Color, Line.Text.c_str());
+
+		for (int32 Column = 0; Column < 3; ++Column) {
+			const FString &Text = Line.Values[Column];
+			const float TextWidth = ImGui::CalcTextSize(Text.c_str()).x;
+			DrawList->AddText({ColumnRight[Column] - TextWidth, Y}, Line.Color,
+			Text.c_str());
+		}
+	}
+}

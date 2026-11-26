@@ -1,0 +1,10 @@
+{
+    "Properties": {
+        "StaticFriction": 0.72,
+        "Friction": 0.55,
+        "Restitution": 0.05,
+        "Density": 1000.0,
+        "FrictionCombineMode": "Average",
+        "RestitutionCombineMode": "Average"
+    }
+}

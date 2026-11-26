@@ -1,0 +1,30 @@
+{
+    "BaseColor": {
+        "W": 1.0,
+        "X": 1.0,
+        "Y": 1.0,
+        "Z": 1.0
+    },
+    "BlendMode": "Opaque",
+    "FlipNormalY": false,
+    "MaterialDomain": "Surface",
+    "OpacityMaskClipValue": 0.3330000042915344,
+    "Properties": {},
+    "SamplerState": "LinearWrap",
+    "ShadingModel": "DefaultLit",
+    "Shininess": 32.0,
+    "SpecularColor": {
+        "X": 1.0,
+        "Y": 1.0,
+        "Z": 1.0
+    },
+    "Textures": [
+        "C:/Dev/week13/Week13_Team5/DefaultProject/Content/FBX/BistroInterior/Textures/MASTER_Interior_01_Paris_Lantern_BaseColor.dds",
+        "C:/Dev/week13/Week13_Team5/DefaultProject/Content/FBX/BistroInterior/Textures/MASTER_Interior_01_Paris_Lantern_Normal.dds"
+    ],
+    "TwoSided": false,
+    "UVScrollSpeed": [
+        0.0,
+        0.0
+    ]
+}

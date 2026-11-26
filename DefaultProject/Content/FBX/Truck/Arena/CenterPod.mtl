@@ -1,0 +1,3 @@
+newmtl CenterPod
+Kd 1 1 1
+map_Kd CenterPod.png

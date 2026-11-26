@@ -1,0 +1,386 @@
+{
+  "Version": 1,
+  "Properties": {
+    "LODMethod": "DirectSet"
+  },
+  "Emitters": [
+    {
+      "Properties": {},
+      "LODLevels": [
+        {
+          "Properties": {
+            "bEnabled": true
+          },
+          "RequiredModule": {
+            "Properties": {
+              "EmitterDelay": 0,
+              "EmitterDuration": 1,
+              "EmitterLoops": 0,
+              "bUseLocalSpace": false,
+              "bEnabled": true,
+              "InterpolationMethod": "None",
+              "SortMode": "DistanceToView",
+              "MaxActiveParticles": 28,
+              "SubImages_Horizontal": 1,
+              "SubImages_Vertical": 1,
+              "Material": {
+                "Base": "ParticleSpriteAlphaBlend",
+                "Instance": {
+                  "Properties": {},
+                  "MaterialDomain": "Particle",
+                  "BlendMode": "Translucent",
+                  "ShadingModel": "Unlit",
+                  "TwoSided": true,
+                  "OpacityMaskClipValue": 0.333,
+                  "BaseColor": {
+                    "X": 1,
+                    "Y": 1,
+                    "Z": 1,
+                    "W": 1
+                  },
+                  "SpecularColor": {
+                    "X": 0,
+                    "Y": 0,
+                    "Z": 0
+                  },
+                  "Shininess": 0,
+                  "UVScrollSpeed": [
+                    0,
+                    0
+                  ],
+                  "FlipNormalY": false,
+                  "SamplerState": "LinearClamp",
+                  "Textures": [
+                    "FBX/Truck/Effects/WheelDust.png",
+                    ""
+                  ]
+                }
+              }
+            }
+          },
+          "SpawnModule": {
+            "Properties": {
+              "bEnabled": true,
+              "Rate": {
+                "Mode": "Constant",
+                "Constant": 0,
+                "MinValue": 0,
+                "MaxValue": 0,
+                "CurveKeys": []
+              },
+              "RateScale": {
+                "Mode": "Constant",
+                "Constant": 1,
+                "MinValue": 0,
+                "MaxValue": 0,
+                "CurveKeys": []
+              },
+              "BurstList": []
+            }
+          },
+          "Modules": [
+            {
+              "Class": "UParticleModuleLifetime",
+              "Data": {
+                "Properties": {
+                  "bEnabled": true,
+                  "Lifetime": {
+                    "Mode": "Uniform",
+                    "Constant": 0.8,
+                    "MinValue": 0.64,
+                    "MaxValue": 0.98,
+                    "CurveKeys": []
+                  }
+                }
+              }
+            },
+            {
+              "Class": "UParticleModuleSize",
+              "Data": {
+                "Properties": {
+                  "bEnabled": true,
+                  "StartSize": {
+                    "Mode": "Uniform",
+                    "Constant": {
+                      "X": 0.5,
+                      "Y": 0.5,
+                      "Z": 0.5
+                    },
+                    "MinValue": {
+                      "X": 0.39,
+                      "Y": 0.39,
+                      "Z": 0.39
+                    },
+                    "MaxValue": {
+                      "X": 0.61,
+                      "Y": 0.61,
+                      "Z": 0.61
+                    },
+                    "CurveKeysX": [],
+                    "CurveKeysY": [],
+                    "CurveKeysZ": [],
+                    "bLockAxes": false
+                  }
+                }
+              }
+            },
+            {
+              "Class": "UParticleModuleLocation",
+              "Data": {
+                "Properties": {
+                  "bEnabled": true,
+                  "StartLocation": {
+                    "Mode": "Uniform",
+                    "Constant": {
+                      "X": 0,
+                      "Y": 0,
+                      "Z": 0
+                    },
+                    "MinValue": {
+                      "X": -0.13,
+                      "Y": -0.23,
+                      "Z": 0
+                    },
+                    "MaxValue": {
+                      "X": 0.13,
+                      "Y": 0.23,
+                      "Z": 0.11
+                    },
+                    "CurveKeysX": [],
+                    "CurveKeysY": [],
+                    "CurveKeysZ": [],
+                    "bLockAxes": false
+                  }
+                }
+              }
+            },
+            {
+              "Class": "UParticleModuleVelocity",
+              "Data": {
+                "Properties": {
+                  "bEnabled": true,
+                  "StartVelocity": {
+                    "Mode": "Uniform",
+                    "Constant": {
+                      "X": 0,
+                      "Y": 0,
+                      "Z": 0
+                    },
+                    "MinValue": {
+                      "X": -0.35,
+                      "Y": -0.47,
+                      "Z": 0.06
+                    },
+                    "MaxValue": {
+                      "X": 0.35,
+                      "Y": 0.47,
+                      "Z": 0.34
+                    },
+                    "CurveKeysX": [],
+                    "CurveKeysY": [],
+                    "CurveKeysZ": [],
+                    "bLockAxes": false
+                  },
+                  "StartVelocityRadial": {
+                    "Mode": "Constant",
+                    "Constant": 0,
+                    "MinValue": 0,
+                    "MaxValue": 0,
+                    "CurveKeys": []
+                  }
+                }
+              }
+            },
+            {
+              "Class": "UParticleModuleColorOverLife",
+              "Data": {
+                "Properties": {
+                  "bEnabled": true,
+                  "ColorOverLife": {
+                    "Mode": "Constant",
+                    "Constant": {
+                      "X": 1,
+                      "Y": 1,
+                      "Z": 1
+                    },
+                    "MinValue": {
+                      "X": 0,
+                      "Y": 0,
+                      "Z": 0
+                    },
+                    "MaxValue": {
+                      "X": 0,
+                      "Y": 0,
+                      "Z": 0
+                    },
+                    "CurveKeysX": [],
+                    "CurveKeysY": [],
+                    "CurveKeysZ": [],
+                    "bLockAxes": false
+                  },
+                  "AlphaOverLife": {
+                    "Mode": "Curve",
+                    "Constant": 0,
+                    "MinValue": 0,
+                    "MaxValue": 0,
+                    "CurveKeys": [
+                      {
+                        "Time": 0,
+                        "Value": 0.16,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      },
+                      {
+                        "Time": 0.16,
+                        "Value": 0.72,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      },
+                      {
+                        "Time": 0.4,
+                        "Value": 0.57,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      },
+                      {
+                        "Time": 0.72,
+                        "Value": 0.19,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      },
+                      {
+                        "Time": 1,
+                        "Value": 0,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      }
+                    ]
+                  },
+                  "bClampAlpha": true
+                }
+              }
+            },
+            {
+              "Class": "UParticleModuleSizeMultiplyLife",
+              "Data": {
+                "Properties": {
+                  "bEnabled": true,
+                  "LifeMultiplier": {
+                    "Mode": "Curve",
+                    "Constant": {
+                      "X": 1,
+                      "Y": 1,
+                      "Z": 1
+                    },
+                    "MinValue": {
+                      "X": 0,
+                      "Y": 0,
+                      "Z": 0
+                    },
+                    "MaxValue": {
+                      "X": 0,
+                      "Y": 0,
+                      "Z": 0
+                    },
+                    "CurveKeysX": [
+                      {
+                        "Time": 0,
+                        "Value": 1,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      },
+                      {
+                        "Time": 0.35,
+                        "Value": 1.64,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      },
+                      {
+                        "Time": 1,
+                        "Value": 2.6,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      }
+                    ],
+                    "CurveKeysY": [
+                      {
+                        "Time": 0,
+                        "Value": 1,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      },
+                      {
+                        "Time": 0.35,
+                        "Value": 1.64,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      },
+                      {
+                        "Time": 1,
+                        "Value": 2.6,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      }
+                    ],
+                    "CurveKeysZ": [
+                      {
+                        "Time": 0,
+                        "Value": 1,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      },
+                      {
+                        "Time": 0.35,
+                        "Value": 1.64,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      },
+                      {
+                        "Time": 1,
+                        "Value": 2.6,
+                        "ArriveTangent": 0,
+                        "LeaveTangent": 0,
+                        "InterpMode": "Linear",
+                        "KeyId": -1
+                      }
+                    ],
+                    "bLockAxes": false
+                  },
+                  "bMultiplyX": true,
+                  "bMultiplyY": true,
+                  "bMultiplyZ": true
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

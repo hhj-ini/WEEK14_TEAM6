@@ -1,0 +1,138 @@
+#pragma once
+
+#include "Editor/EditorUI/EditorPanel.h"
+#include "Editor/Viewports/LevelEditorViewport.h"
+#include "Editor/LevelViewportLayout.h"
+#include <functional>
+
+class FGameViewportClient;
+class FGizmo;
+class FEditorSettingsManager;
+
+class FViewportsPanel : public IEditorPanel {
+public:
+	// 활성 뷰포트 인덱스 설정
+	void SetActiveViewIndex(const int32 InIndex) { ActiveViewIndex = InIndex; }
+	int32 GetActiveViewIndex() const { return ActiveViewIndex; }
+
+	// 네 View의 렌더 타깃과 UI 제어 상태를 초기화한다.
+	bool Init() override;
+	// 프레임 입력에서 Splitter Drag와 View별 UI 요청을 수집한다.
+	void Tick(float DeltaTime) override;
+	// 각 View Texture와 Splitter·Layout 조작 UI를 ImGui 패널에 그린다.
+	void OnRender() override;
+	const char *GetPanelName() const override { return "Viewports"; }
+
+	// Core가 계산한 View Rect에 맞춰 해당 클라이언트의 활성 상태와 크기를 갱신한다.
+	void SetView(int32 ViewIndex, const FRect &Rect, bool bActive);
+
+	FVector2 GetContentSize() const { return {ContentSize.x, ContentSize.y}; }
+	// 패널 내용 영역의 좌상단 (ImGui 멀티 뷰포트라 OS 화면 좌표)
+	FVector2 GetContentOrigin() const { return {ContentOrigin.x, ContentOrigin.y}; }
+	FVector2 GetLocalMousePosition() const;
+	bool IsHovered() const;
+	bool WasRenderedThisFrame() const { return LastRenderedFrame == ImGui::GetFrameCount(); }
+	bool IsFocused() const { return bFocused; }
+
+	float ConsumeHorizontalDrag();
+	float ConsumeVerticalDrag();
+
+	// UI에서 발생한 Layout 변경 요청을 한 번 소비하도록 반환한다.
+	bool ConsumeLayoutRequest(ELayoutMode &OutMode, int32 &OutSingleViewIndex);
+	void SetLayoutMode(ELayoutMode InMode, int32 InSingleIndex = 0) {
+		CurrentLayoutMode = InMode;
+		CurrentSingleViewIndex = InSingleIndex;
+		if (InMode != ELayoutMode::Single) LastMultiPaneLayout = InMode;
+	}
+	// 분할선을 그릴 위치. Core가 레이아웃 사각형을 계산할 때 쓴 비율을 그대로 받는다.
+	void SetSplitRatio(const FSplitRatio& InRatio) { SplitRatio = InRatio; }
+
+	// 뷰포트 클라이언트 조회
+	FLevelEditorViewportClient* GetViewportClient(const int32 ViewIndex) const
+	{
+			if (ViewIndex >= 0 && ViewIndex < 4)
+			{
+					return ViewportClients[ViewIndex].get();
+			}
+			return nullptr;
+	}
+	void SetGameViewportClient(int32 ViewIndex, FGameViewportClient* InGameClient) {
+		if (ViewIndex < 0 || ViewIndex >= 4)
+			return;
+		GameViewportIndex = ViewIndex;
+		GameViewportClient = InGameClient;
+	}
+	void ClearGameViewportClient() {
+		GameViewportClient = nullptr;
+		GameViewportIndex = -1;
+	}
+
+	void SetShowNoCamera(bool bValue) { bShowNoCamera = bValue; }
+	void SetWorld(UWorld* InWorld) { World = InWorld; }
+	void SetGizmo(FGizmo* InGizmo) { Gizmo = InGizmo; }
+	void SetEditorSettings(FEditorSettingsManager* InSettings) { EditorSettings = InSettings; }
+	// 메인 툴바의 Add/Grid 드롭다운이 쓴다. Add는 활성 뷰 카메라 앞에 액터를 놓는다.
+	void DrawSpawnMenuForActiveView();
+	void DrawGridMenu();
+	void DrawSnapMenu();
+	int32 GetGridSpacing() const;
+	bool IsLocationSnapEnabled() const;
+	void SetLocationSnapEnabled(bool bEnabled);
+	float GetLocationSnapSize() const;
+	// 회전·크기 스냅 드롭다운 메뉴와 버튼 표시용 상태
+	void DrawRotationSnapMenu();
+	void DrawScaleSnapMenu();
+	bool IsRotationSnapEnabled() const;
+	float GetRotationSnapDegrees() const;
+	bool IsScaleSnapEnabled() const;
+	float GetScaleSnapSize() const;
+	void SetActorSpawnedCallback(std::function<void(AActor*)> Callback) { OnActorSpawned = std::move(Callback); }
+	void SetIsPlayingQuery(std::function<bool()> Query) { IsPlayingQuery = std::move(Query); }
+
+private:
+	void DrawViewportToolbar(int32 ViewIndex);
+	void DrawSpawnMenu(FEditorViewportClient& Client);
+	void DrawShowMenu();
+	void DrawRenderMenu();
+	// UE 뷰포트 툴바 방식의 드롭다운 (아이콘 + 라벨 + 화살표)
+	void DrawProjectionMenu(FEditorViewportClient& Client);
+	void DrawCameraSpeedMenu();
+	void DrawViewModeMenu(FEditorViewportClient& Client);
+	void DrawLayoutMenu(int32 ViewIndex);
+	FSplitRatio SplitRatio{};
+	UWorld* World = nullptr;
+	FGizmo* Gizmo = nullptr;
+	FEditorSettingsManager* EditorSettings = nullptr;
+	std::function<void(AActor*)> OnActorSpawned;
+	std::function<bool()> IsPlayingQuery;
+	FRect ToolbarRects[4]{}; // OS screen coordinates, retained for input before ImGui NewFrame.
+	float ToolbarHeights[4]{};
+	int32 ActiveViewIndex = 0;
+	bool bShowNoCamera = false;
+
+	// 통계 정보 출력
+	void DrawStatOverlay(ImDrawList* DrawList, const ImVec2& ViewMin, FEditorViewportClient* Client) const;
+
+	TUniquePtr<FLevelEditorViewportClient> ViewportClients[4]{};
+	// PIE 월드 컨텍스트가 소유하며, 세션 종료 전에 비운다.
+	FGameViewportClient* GameViewportClient = nullptr;
+	int32 GameViewportIndex = -1;
+	ImVec2 ContentOrigin{};
+	ImVec2 ContentSize{1.0f, 1.0f};
+	int LastRenderedFrame = -1;
+	bool bHovered = false;
+	bool bFocused = false;
+	float PendingHorizontalDrag = 0.0f;
+	float PendingVerticalDrag = 0.0f;
+	// 누른 뒤 커서가 Splitter 영역을 벗어나도 버튼을 놓을 때까지 드래그를 유지한다.
+	bool bDraggingVerticalSplitter = false;
+	bool bDraggingHorizontalSplitter = false;
+	ELayoutMode CurrentLayoutMode = ELayoutMode::QuadSplit;
+	int32 CurrentSingleViewIndex = 0;
+	bool bHasLayoutRequest = false;
+	ELayoutMode RequestedLayoutMode = ELayoutMode::QuadSplit;
+	// "뷰포트 최대화"를 끌 때 돌아갈 다중 패널 레이아웃
+	ELayoutMode LastMultiPaneLayout = ELayoutMode::QuadSplit;
+	int32 RequestedSingleViewIndex = 0;
+
+};

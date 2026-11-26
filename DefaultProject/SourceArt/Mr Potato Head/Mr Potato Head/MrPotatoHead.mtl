@@ -1,0 +1,63 @@
+newmtl phong1SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd hat.png
+bump hat_normal.png -bm -0.178571
+Ni 1.00
+Ks 0.91 0.91 0.91
+Ns 26.38
+newmtl phong2SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd body.png
+bump body_normal.png -bm -0.178571
+Ni 1.00
+Ks 0.17 0.17 0.17
+Ns 0.00
+newmtl phong3SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd etc.png
+bump etc_normal.png -bm -0.297619
+Ni 1.00
+Ks 0.37 0.37 0.37
+Ns 77.27
+newmtl phong4SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd hair.png
+bump hair_normal.png -bm -0.178571
+Ni 1.00
+Ks 0.10 0.10 0.10
+Ns 15.08
+newmtl surfaceShader1SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd tongueteeth3.png
+Ni 0.00
+newmtl surfaceShader2SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd tongueteeth3.png
+Ni 0.00
+newmtl tongueteeth_final_tongueteeth_final_tongueteeth_final_tongueteeth_final_eyelids_eyes_tongueteeth_final_eyelids_eyes_tongueteeth_final_eyelids_tongueteeth_final_eyelids_tongueteeth_final_eyelids_tongueteeth_final_tongueteeth_final_tongueteeth_final_tongueteeth_final_phongE5SG2
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd tongueteeth3.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 0.06

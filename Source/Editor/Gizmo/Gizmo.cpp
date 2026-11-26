@@ -1,0 +1,559 @@
+#include "EnginePCH.h"
+#include "Editor/Gizmo/Gizmo.h"
+#include "Editor/Gizmo/GizmoRenderer.h"
+#include "Render/SceneView.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/Actor.h"
+#include "GameFramework/Actor/LightActorBase.h"
+#include <cmath>
+
+namespace
+{
+	float SnapValue(float Value, float SnapStep)
+	{
+		if (SnapStep <= 0.0f) return Value;
+		const float Snapped = std::roundf(Value / SnapStep) * SnapStep;
+		return Snapped == 0.0f ? 0.0f : Snapped;
+	}
+
+	FVector SnapVector(const FVector& Value, float SnapStep)
+	{
+		return {
+			SnapValue(Value.X, SnapStep),
+			SnapValue(Value.Y, SnapStep),
+			SnapValue(Value.Z, SnapStep)
+		};
+	}
+
+
+	// 크기는 0이 되면 안 되므로 0으로 맞춰질 값은 한 칸(SnapStep)으로 둔다. 부호는 유지한다.
+	float SnapScaleValue(float Value, float SnapStep)
+	{
+		const float Snapped = SnapValue(Value, SnapStep);
+		if (Snapped != 0.0f) return Snapped;
+		return Value < 0.0f ? -SnapStep : SnapStep;
+	}
+
+	FVector SnapScaleVector(const FVector& Value, float SnapStep)
+	{
+		return {
+			SnapScaleValue(Value.X, SnapStep),
+			SnapScaleValue(Value.Y, SnapStep),
+			SnapScaleValue(Value.Z, SnapStep)
+		};
+	}
+}
+
+static const FVector AxisDirs[3] = {
+	FVector(1, 0, 0),
+	FVector(0, 1, 0),
+	FVector(0, 0, 1),
+};
+
+static const int AXIS_PLANE_YZ = 3;
+static const int AXIS_PLANE_ZX = 4;
+static const int AXIS_PLANE_XY = 5;
+static const int AXIS_SCREEN = 6;   // 3축 자유 이동
+
+static const float AxisLength = 1.5f;
+static const float HitPixels = 12.0f;
+
+// 그리는 도구를 만들고 축 메시, 셰이더, 상수 버퍼를 준비한다. FGizmoRenderer::Init의 렌더러 인자는 쓰이지 않는다.
+FGizmo::FGizmo()
+{
+	Renderer = MakeUnique<FGizmoRenderer>();
+	Renderer->Init(nullptr);
+}
+
+// FGizmoRenderer가 완전한 타입인 이 파일에서 소멸자를 정의해야 TUniquePtr가 지울 수 있다.
+FGizmo::~FGizmo() = default;
+
+void FGizmo::Render(const FSceneView* View) const
+{
+	Renderer->OnRender(*this, View->ViewProjectionMatrix, View->ViewLocation, !View->bIsPerspective);
+}
+
+// 입력 View의 카메라 조건으로 축 선택과 드래그를 갱신한다.
+void FGizmo::Update(const FRay& MouseRay, const FVector2& MousePos, const FMatrix& ViewProj, int ScreenW, int ScreenH, bool bMouseDown, const FVector& CameraLocation, const bool bCameraOrthographic, bool bMousePressed)
+{
+	ViewCameraLocation = CameraLocation;
+	bViewCameraOrthographic = bCameraOrthographic;
+
+	if (!Target || Mode == EGizmoMode::Select) // 만약 현재 타겟이 없거나 선택 전용 모드라면 
+	{
+		HoveredAxis = -1;
+		DraggingAxis = -1;
+		return;
+	}
+
+	if (DraggingAxis >= 0) // 만약 드래그 중인 축이 있다면
+	{
+		if (bMouseDown)
+			UpdateDrag(MouseRay, MousePos);
+		else
+		{
+			UpdateDrag(MouseRay, MousePos);
+			EndDrag();
+		}
+		return;
+	}
+
+	HoveredAxis = PickAxis(MousePos, ViewProj, ScreenW, ScreenH); // 현재 마우스가 올라간 기즈모 축이 있으면
+
+	if (bMousePressed && bMouseDown && HoveredAxis >= 0)
+		BeginDrag(HoveredAxis, MouseRay, MousePos);
+
+
+}
+
+// 모드에 따라 선형 축 또는 회전 링 피킹을 선택한다.
+int FGizmo::PickAxis(const FVector2& MousePos, const FMatrix& ViewProj, int ScreenW, int ScreenH)
+{
+	if (Mode == EGizmoMode::Select)
+		return -1;
+
+	if (Mode == EGizmoMode::Rotation)
+		return PickRotationAxis(MousePos, ViewProj, ScreenW, ScreenH);
+
+	return PickLinearAxis(MousePos, ViewProj, ScreenW, ScreenH);
+}
+
+// 투영한 축 선분과 마우스의 화면 거리로 조작 축을 고른다.
+int FGizmo::PickLinearAxis(const FVector2& MousePos, const FMatrix& ViewProj, int ScreenW, int ScreenH)
+{
+	FVector Origin = GetRenderLocation();
+
+	FVector2 Center = WorldToScreen(Origin, ViewProj, ScreenW, ScreenH);
+	FVector2 d = MousePos - Center;
+	if (sqrtf(d.X * d.X + d.Y * d.Y) < 15.0f)
+		return AXIS_SCREEN;
+	if (Mode == EGizmoMode::Location)
+	{
+		// Pick the same projected quad that is rendered for each plane handle.
+		const auto Cross2 = [](const FVector2& A, const FVector2& B) { return A.X * B.Y - A.Y * B.X; };
+		for (int Normal = 0; Normal < 3; ++Normal)
+		{
+			const FVector U = GetAxisDirection((Normal + 1) % 3);
+			const FVector V = GetAxisDirection((Normal + 2) % 3);
+			FVector2 Points[4] = {
+				WorldToScreen(Origin + U * 0.3f + V * 0.3f, ViewProj, ScreenW, ScreenH),
+				WorldToScreen(Origin + U * 0.65f + V * 0.3f, ViewProj, ScreenW, ScreenH),
+				WorldToScreen(Origin + U * 0.65f + V * 0.65f, ViewProj, ScreenW, ScreenH),
+				WorldToScreen(Origin + U * 0.3f + V * 0.65f, ViewProj, ScreenW, ScreenH) };
+			if (fabsf(Cross2(Points[1] - Points[0], Points[3] - Points[0])) < 16.0f) continue;
+			bool Positive = false, Negative = false;
+			for (int Edge = 0; Edge < 4; ++Edge)
+			{
+				const float Side = Cross2(Points[(Edge + 1) % 4] - Points[Edge], MousePos - Points[Edge]);
+				Positive |= Side > 0.0f; Negative |= Side < 0.0f;
+			}
+			if (!(Positive && Negative)) return AXIS_PLANE_YZ + Normal;
+		}
+	}
+
+	int Best = -1;
+	float BestDist = HitPixels;
+
+	for (int i = 0; i < 3; ++i)
+	{
+		FVector2 Start = WorldToScreen(Origin, ViewProj, ScreenW, ScreenH);
+		FVector2 End = WorldToScreen(Origin + GetAxisDirection(i) * AxisLength, ViewProj, ScreenW, ScreenH);
+
+		float Dist = DistanceToSegment(MousePos, Start, End);
+		if (Dist < BestDist)
+		{
+			BestDist = Dist;
+			Best = i;
+		}
+	}
+	return Best;
+}
+
+// 회전 링을 선분으로 나누어 화면 거리로 회전 축을 고른다.
+int FGizmo::PickRotationAxis(const FVector2& MousePos, const FMatrix& ViewProj, int ScreenW, int ScreenH)
+{
+	const FVector Origin = GetRenderLocation();
+	const int Segments = 32;
+
+	int Best = -1;
+	float BestDist = HitPixels;
+
+	for (int Axis = 0; Axis < 3; ++Axis)
+	{
+		FVector u = GetAxisDirection((Axis + 1) % 3);
+		FVector v = GetAxisDirection((Axis + 2) % 3);
+
+		FVector2 prev;
+		bool bHasPrev = false;
+
+		for (int s = 0; s <= Segments; ++s)
+		{
+			float theta = (float)s / Segments * 2.0f * PI;
+			FVector worldPos = Origin
+				+ u * (RingRadius * cosf(theta))
+				+ v * (RingRadius * sinf(theta));
+
+			FVector2 screenPos = WorldToScreen(worldPos, ViewProj, ScreenW, ScreenH);
+
+			if (bHasPrev)
+			{
+				float Dist = DistanceToSegment(MousePos, prev, screenPos);
+				if (Dist < BestDist)
+				{
+					BestDist = Dist;
+					Best = Axis;
+				}
+			}
+
+			prev = screenPos;
+			bHasPrev = true;
+		}
+	}
+
+	FVector CamPos = GetCameraLocation();
+	FVector Forward = (Origin - CamPos).Normalized();
+	FVector u = FVector(0, 0, 1).Cross(Forward).Normalized();
+	FVector v = Forward.Cross(u);
+
+	const float ScreenRingRadius = RingRadius * 1.3f;  
+
+	FVector2 prev;
+	bool bHasPrev = false;
+
+	for (int s = 0; s <= Segments; ++s)
+	{
+		float theta = (float)s / Segments * 2.0f * PI;
+		FVector worldPos = Origin
+			+ u * (ScreenRingRadius * cosf(theta))
+			+ v * (ScreenRingRadius * sinf(theta));
+
+		FVector2 screenPos = WorldToScreen(worldPos, ViewProj, ScreenW, ScreenH);
+
+		if (bHasPrev)
+		{
+			float Dist = DistanceToSegment(MousePos, prev, screenPos);
+			if (Dist < BestDist)
+			{
+				BestDist = Dist;
+				Best = AXIS_SCREEN;
+			}
+		}
+
+		prev = screenPos;
+		bHasPrev = true;
+	}
+
+	return Best;
+}
+
+// LocalLightComponet 가져오기 (Rect, Point, Spot 등 Radius를 파라미터로 것들)
+ULocalLightComponent* FGizmo::GetTargetLight() const
+{
+    if (!Target) return nullptr;
+    ALightActorBase* Actor = Cast<ALightActorBase>(Target->GetOwner());
+    return Actor ? Cast<ULocalLightComponent>(Actor->GetLightComponent()) : nullptr;
+}
+
+// 조명이면 radius만 바꾸고 true를 반환
+bool FGizmo::ApplyScaleToLight(float Factor)
+{
+    ULocalLightComponent* Light = GetTargetLight();
+    if (!Light) return false;
+    float Radius = DragStartRadius * Factor;
+    if (bLocationSnapEnabled && LocationSnapSize > 0.0f)
+        Radius = SnapScaleValue(Radius, LocationSnapSize);
+    Light->SetAttenuationRadius(Radius);
+    return true;
+}
+
+// 시작 Transform·교차점을 저장하고 조작 축의 드래그 평면을 정한다.
+void FGizmo::BeginDrag(int Axis, const FRay& MouseRay, const FVector2& MousePos)
+{
+	// 부모의 변환 행렬에 Scale이 0이 포함되면 역행렬이 존재하지 않아서 드래그를 진행할 수 없음
+	// 따라서, 부모의 WorldMatrix의 행렬식이 0이라면 드래그 종료
+	if (Mode == EGizmoMode::Location && Target->GetAttachParent() &&
+		fabsf(Target->GetAttachParent()->GetWorldMatrix().Determinant()) < 1e-12f)
+	{
+		EndDrag();
+		return;
+	}
+
+	DragStartMousePos = MousePos;
+	DraggingAxis = Axis;
+	DragStartLocation = Target->GetWorldLocation();
+	DragStartRenderLocation = GetRenderLocation();    
+	if (Mode == EGizmoMode::Location)
+	{
+		// 이동량은 모든 에디터에서 실제 대상 위치를 지나는 평면으로 계산합니다.
+		DragStartRenderLocation = Target->GetWorldLocation();
+	}
+
+	DragStartRotation = Target->GetWorldRotation();
+	DragStartScale = GetScale();
+
+	// Local LightComponent면 Radius 가져와서 저장해놓기
+	if (ULocalLightComponent* Light = GetTargetLight())
+    	DragStartRadius = Light->GetAttenuationRadius();
+
+	DragAxisDirection = GetAxisDirection(Axis);
+	FVector axis = DragAxisDirection;
+
+	if (Mode == EGizmoMode::Location && Axis >= AXIS_PLANE_YZ && Axis <= AXIS_PLANE_XY)
+	{
+		DragPlaneNormal = GetAxisDirection(Axis - AXIS_PLANE_YZ);
+	}
+	else if (Axis == AXIS_SCREEN)
+	{
+		if (Mode == EGizmoMode::Rotation)
+		{
+			DragAxisDirection = (GetRenderLocation() - GetCameraLocation()).Normalized();
+			DragPlaneNormal = DragAxisDirection;
+		}
+		else
+		{
+			DragPlaneNormal = -MouseRay.Direction;
+		}
+	}
+	else if (Mode == EGizmoMode::Rotation)
+	{
+		FVector ToCamera = (GetCameraLocation() - GetRenderLocation()).Normalized();
+		if (DragAxisDirection.Dot(ToCamera) < 0.0f)
+			DragAxisDirection = -DragAxisDirection;
+
+		DragPlaneNormal = DragAxisDirection;
+	}
+	else
+	{
+		FVector ToCamera = -MouseRay.Direction;
+		FVector Ortho = axis.Cross(ToCamera);
+		DragPlaneNormal = Ortho.Cross(axis).Normalized();
+	}
+
+	float t;
+	if (RayIntersectsPlane(MouseRay, DragStartRenderLocation, DragPlaneNormal, t))
+		DragStartPoint = MouseRay.Origin + MouseRay.Direction * t;
+	else
+		DragStartPoint = DragStartRenderLocation;
+
+	if (Mode == EGizmoMode::Rotation)
+		DragStartAngle = ComputeAngleOnPlane(DragStartPoint, Axis);
+}
+
+// 평면 교차점 변화를 이동·회전·크기에 반영한다.
+void FGizmo::UpdateDrag(const FRay& MouseRay, const FVector2& MousePos)
+{
+	float t;
+	if (!RayIntersectsPlane(MouseRay, DragStartRenderLocation, DragPlaneNormal, t))
+		return;
+
+	FVector current = MouseRay.Origin + MouseRay.Direction * t;
+	if (Mode == EGizmoMode::Location && DraggingAxis >= AXIS_PLANE_YZ && DraggingAxis <= AXIS_PLANE_XY)
+	{
+		const FVector RawDelta = current - DragStartPoint;
+		const FVector PlanarDelta = RawDelta - DragPlaneNormal * RawDelta.Dot(DragPlaneNormal);
+		FVector NewLocation = DragStartLocation + PlanarDelta;
+		if (bLocationSnapEnabled && LocationSnapSize > 0.0f)
+		{
+			const int PlaneNormalAxis = DraggingAxis - AXIS_PLANE_YZ;
+			if (Space == EGizmoSpace::World)
+			{
+				if (PlaneNormalAxis != 0) NewLocation.X = SnapValue(NewLocation.X, LocationSnapSize);
+				if (PlaneNormalAxis != 1) NewLocation.Y = SnapValue(NewLocation.Y, LocationSnapSize);
+				if (PlaneNormalAxis != 2) NewLocation.Z = SnapValue(NewLocation.Z, LocationSnapSize);
+			}
+			else
+			{
+				const FVector Axis1 = GetAxisDirection((PlaneNormalAxis + 1) % 3);
+				const FVector Axis2 = GetAxisDirection((PlaneNormalAxis + 2) % 3);
+				NewLocation = DragStartLocation
+					+ Axis1 * SnapValue(PlanarDelta.Dot(Axis1), LocationSnapSize)
+					+ Axis2 * SnapValue(PlanarDelta.Dot(Axis2), LocationSnapSize);
+			}
+		}
+		Target->SetWorldLocation(NewLocation, false);
+		return;
+	}
+
+	if (DraggingAxis == AXIS_SCREEN && Mode != EGizmoMode::Rotation)
+	{
+		if (Mode == EGizmoMode::Location)
+		{
+			FVector NewLocation = DragStartLocation + (current - DragStartPoint);
+			if (bLocationSnapEnabled && LocationSnapSize > 0.0f)
+			{
+				NewLocation = SnapVector(NewLocation, LocationSnapSize);
+			}
+			Target->SetWorldLocation(NewLocation, false);
+		}
+		else
+		{
+			float dx = MousePos.X - DragStartMousePos.X;
+			float dy = DragStartMousePos.Y - MousePos.Y;   // 화면 Y는 아래가 +
+			float scaleDelta = (dx + dy) * 0.005f;
+
+			float factor = 1.0f + scaleDelta;
+			if (factor < 0.01f) factor = 0.01f;
+
+			if (!ApplyScaleToLight(factor)) 	// 조명이면 여기서 radius만 변경하고 return
+			{
+				FVector NewScale = DragStartScale * factor;
+				if (bScaleSnapEnabled && ScaleSnapSize > 0.0f)
+					NewScale = SnapScaleVector(NewScale, ScaleSnapSize);
+				Target->SetRelativeScale3D(NewScale);
+			}
+		}
+		return;
+	}
+
+	if (Mode == EGizmoMode::Rotation)
+	{
+		float currentAngle = ComputeAngleOnPlane(current, DraggingAxis);
+		float deltaAngle = currentAngle - DragStartAngle;
+		// 드래그를 시작한 자세에서 돌린 각도를 일정 간격으로 맞춘다.
+		if (bRotationSnapEnabled)
+			deltaAngle = SnapValue(deltaAngle, RotationSnapDegrees * PI / 180.0f);
+
+		FQuat delta = FQuat::MakeFromAxisAngle(DragAxisDirection, deltaAngle);
+		FQuat start = DragStartRotation.Quaternion();
+
+		FQuat result = delta * start;
+
+		Target->SetWorldRotation(result.ToFRotator(), false);
+		return;
+	}
+
+	FVector delta = current - DragStartPoint;
+	float amount = delta.Dot(DragAxisDirection);
+
+	if (Mode == EGizmoMode::Location)
+	{
+		FVector NewLocation = DragStartLocation + DragAxisDirection * amount;
+		if (bLocationSnapEnabled && LocationSnapSize > 0.0f)
+		{
+			if (Space == EGizmoSpace::World)
+			{
+				if (DraggingAxis == 0)      NewLocation.X = SnapValue(NewLocation.X, LocationSnapSize);
+				else if (DraggingAxis == 1) NewLocation.Y = SnapValue(NewLocation.Y, LocationSnapSize);
+				else if (DraggingAxis == 2) NewLocation.Z = SnapValue(NewLocation.Z, LocationSnapSize);
+			}
+			else
+			{
+				NewLocation = DragStartLocation + DragAxisDirection * SnapValue(amount, LocationSnapSize);
+			}
+		}
+		Target->SetWorldLocation(NewLocation, false);
+	}
+	else   // Scale
+	{
+		float factor = 1.0f + amount;
+		if (factor < 0.01f) factor = 0.01f;
+
+		// 조명이면 여기서 radius만 반영하고 return
+		if (ApplyScaleToLight(factor)) return;
+
+		FVector NewScale = DragStartScale;
+		if (DraggingAxis == 0)      NewScale.X *= factor;
+		else if (DraggingAxis == 1) NewScale.Y *= factor;
+		else                        NewScale.Z *= factor;
+
+		// 끌고 있는 축의 크기만 맞춘다. 나머지 축은 건드리지 않는다.
+		if (bScaleSnapEnabled && ScaleSnapSize > 0.0f)
+		{
+			float& Component = DraggingAxis == 0 ? NewScale.X : (DraggingAxis == 1 ? NewScale.Y : NewScale.Z);
+			Component = SnapScaleValue(Component, ScaleSnapSize);
+		}
+
+		Target->SetRelativeScale3D(NewScale);
+	}
+}
+
+// 드래그 축을 비워 조작을 종료한다.
+void FGizmo::EndDrag()
+{
+	DraggingAxis = -1;
+	HoveredAxis = -1;
+}
+
+// 평면 기저에 점을 투영하고 atan2로 회전각을 구한다.
+float FGizmo::ComputeAngleOnPlane(const FVector& Point, int Axis) const
+{
+	FVector u, v;
+
+	if (DraggingAxis >= 0)
+	{
+		FVector Ref = (fabsf(DragAxisDirection.Z) > 0.9f) ? FVector(1, 0, 0) : FVector(0, 0, 1);
+		u = Ref.Cross(DragAxisDirection).Normalized();
+		v = DragAxisDirection.Cross(u);
+	}
+	else if (Axis == AXIS_SCREEN)
+	{
+		FVector Forward = (GetRenderLocation() - GetCameraLocation()).Normalized();
+		u = FVector(0, 0, 1).Cross(Forward).Normalized();
+		v = Forward.Cross(u);
+	}
+	else
+	{
+		u = AxisDirs[(Axis + 1) % 3];
+		v = AxisDirs[(Axis + 2) % 3];
+	}
+
+	FVector local = Point - DragStartRenderLocation;
+	return atan2f(local.Dot(v), local.Dot(u));
+}
+
+FRotator FGizmo::GetAxisRotation() const
+{
+	// 피킹, 렌더링, 드래그 평면은 모두 월드 공간에서 같은 축을 사용한다.
+	return Target ? Target->GetWorldRotation() : FRotator();
+}
+
+// 월드 축 또는 로컬 회전으로 변환한 정규화 축을 반환한다.
+FVector FGizmo::GetAxisDirection(int Axis) const
+{
+	if (Axis < 0 || Axis > 2) return FVector(0, 0, 0);
+	bool bUseLocal = (Space == EGizmoSpace::Local) || (Mode == EGizmoMode::Scale);
+
+	if (bUseLocal && Target)
+	{
+		FMatrix rot = GetAxisRotation().Quaternion().ToFMatrix();
+		FVector4 v = rot.TransformVector(AxisDirs[Axis]);
+		return FVector(v.X, v.Y, v.Z).Normalized();
+	}
+	return AxisDirs[Axis];
+}
+
+// 입력 View 카메라 조건으로 Gizmo 표시 위치를 구한다.
+FVector FGizmo::GetRenderLocation() const
+{
+	return GetRenderLocationForView(ViewCameraLocation, bViewCameraOrthographic);
+}
+
+// 직교에서는 대상 위치, 원근에서는 카메라 앞 일정 거리로 표시 위치를 정한다.
+FVector FGizmo::GetRenderLocationForView(const FVector& CameraLocation, const bool bCameraOrthographic) const
+{
+	if (!Target) return FVector(0, 0, 0);
+
+	FVector PivotLocation = Target->GetWorldLocation();
+
+	// bounds 합집합 중앙에 기즈모 표시
+	/*if (bUseActorBounds)
+	{
+		FBox Bounds;
+		if (Target->GetOwner()->TryGetActorBounds(Bounds))
+		{
+			PivotLocation = (Bounds.Min + Bounds.Max) * 0.5f;
+			
+		}
+	}*/
+
+	if (bCameraOrthographic) return PivotLocation;
+
+	return (PivotLocation - CameraLocation).Normalized() * 10.0f + CameraLocation;
+
+}
+
+// 현재 입력 View의 카메라 위치를 반환한다.
+FVector FGizmo::GetCameraLocation() const
+{
+	return ViewCameraLocation;
+}

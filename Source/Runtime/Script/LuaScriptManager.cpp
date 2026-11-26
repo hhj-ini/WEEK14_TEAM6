@@ -1,0 +1,164 @@
+#include "EnginePCH.h"
+#include "LuaScriptManager.h"
+
+#include "LuaBindings.h"
+#include "Core/Misc/Paths.h"
+#include <sol/sol.hpp>
+#include <shellapi.h>
+
+FLuaScriptManager& FLuaScriptManager::Get()
+{
+	static FLuaScriptManager Instance;
+	return Instance;
+}
+
+FLuaScriptManager::~FLuaScriptManager()
+{
+	Shutdown();
+}
+
+void FLuaScriptManager::Initialize()
+{
+	if (State)
+		return;
+
+	State = new sol::state();
+
+	State->open_libraries(sol::lib::base, sol::lib::math, sol::lib::string,
+		sol::lib::table, sol::lib::coroutine);
+
+	State->set_function("print", [](sol::this_state S, sol::variadic_args Args)
+		{
+			sol::state_view Lua(S);
+			sol::protected_function ToString = Lua["tostring"];
+
+			FString Line;
+			for (auto Arg : Args)
+			{
+				if (!Line.empty())
+					Line += "\t";
+				sol::protected_function_result Str = ToString(Arg);
+				Line += Str.valid() ? Str.get<FString>() : FString("<?>");
+			}
+			KRS_LOG(Info, "[Lua] {}", Line);
+		});
+
+	FLuaBindings::Register(*State);
+}
+
+void FLuaScriptManager::Shutdown()
+{
+	delete State;
+	State = nullptr;
+}
+
+sol::state& FLuaScriptManager::GetState()
+{
+	if (!State)
+		Initialize();
+	return *State;
+}
+
+namespace
+{
+	// File이 Dir 안에 있으면 Dir 기준 상대 경로를 채운다.
+	bool RelativeInside(const fs::path& File, const fs::path& Dir, fs::path& OutRelative)
+	{
+		std::error_code Ec;
+		const fs::path Base = fs::absolute(Dir, Ec).lexically_normal();
+		OutRelative = File.lexically_relative(Base);
+		return !OutRelative.empty() && !OutRelative.is_absolute() && *OutRelative.begin() != "..";
+	}
+}
+
+FString FLuaScriptManager::MakeScriptKey(const fs::path& File)
+{
+	std::error_code Ec;
+	const fs::path Full = fs::absolute(File, Ec).lexically_normal();
+
+	fs::path Relative;
+	if (RelativeInside(Full, FPaths::ProjectContentDir(), Relative))
+		return "Content/" + FromPath(Relative.generic_wstring());
+	// 옛 프로젝트 배치(루트/Scripts)는 콘텐츠 폴더 밖에 스크립트가 있다.
+	if (RelativeInside(Full, FPaths::ProjectScriptsDir(), Relative))
+		return "Scripts/" + FromPath(Relative.generic_wstring());
+	if (RelativeInside(Full, FPaths::EngineResourcesDir(), Relative))
+		return "Engine/" + FromPath(Relative.generic_wstring());
+	return FromPath(Full.generic_wstring());
+}
+
+FString FLuaScriptManager::NormalizeScriptPath(const FString& Path)
+{
+	if (Path.empty())
+		return {};
+
+	std::error_code Ec;
+	fs::path File = ToPath(Path);
+	if (File.is_absolute() && !fs::exists(File, Ec))
+	{
+		const fs::path Local = FPaths::ProjectScriptsDir() / File.filename();
+		if (fs::exists(Local, Ec))
+			File = Local;
+	}
+	return MakeScriptKey(File);
+}
+
+FString FLuaScriptManager::GetTemplatePath()
+{
+	// 프로젝트에 Content/Scripts/template.lua가 있으면 그것을 쓰고, 없으면 엔진 콘텐츠의 기본 템플릿을 쓴다.
+	const FString ProjectTemplate = "Content/Scripts/template.lua";
+	std::error_code Ec;
+	if (fs::exists(ToPath(ProjectTemplate), Ec))
+		return ProjectTemplate;
+	return FPaths::ResolveContentPath("Engine/Scripts/Template.lua");
+}
+
+bool FLuaScriptManager::CreateScriptFromTemplate(const FString& Path)
+{
+	std::error_code Ec;
+	const fs::path Dest = ToPath(Path);
+
+	// 같은 이름 파일이 이미 있으면 덮어쓰지 않고 연결만 한다 (실수로 작업한 코드를 날리지 않게)
+	if (fs::exists(Dest, Ec))
+	{
+		KRS_LOG(Info, "[Lua] Connect To Existing Script: {}", Path);
+		return true;
+	}
+
+	fs::create_directories(Dest.parent_path(), Ec);
+	if (!fs::copy_file(ToPath(GetTemplatePath()), Dest, Ec))
+	{
+		KRS_LOG(Error, "[Lua] Failed To Copy Template: {} → {}", GetTemplatePath(), Path);
+		return false;
+	}
+
+	KRS_LOG(Info, "[Lua] Create Script: {}", Path);
+	return true;
+}
+
+bool FLuaScriptManager::OpenScriptInEditor(const FString& Path)
+{
+	std::error_code Ec;
+	const fs::path Full = fs::absolute(ToPath(Path), Ec);
+
+	auto Open = [&](const wchar_t* File, const wchar_t* Params)
+		{
+			HINSTANCE R = ShellExecuteW(nullptr, L"open", File, Params, nullptr, SW_SHOWNORMAL);
+			return reinterpret_cast<INT_PTR>(R);
+		};
+
+	INT_PTR Result = Open(Full.c_str(), nullptr);
+	if (Result == SE_ERR_NOASSOC)
+	{
+		// .lua에 연결된 프로그램이 없는 PC는 메모장으로 열기
+		Result = Open(L"notepad.exe", Full.c_str());
+	}
+
+	if (Result <= 32)
+	{
+		KRS_LOG(Error, "[Lua] Cannot open the editor (code: {}): {}", static_cast<int>(Result), Path);
+		return false;
+	}
+
+	return true;
+}

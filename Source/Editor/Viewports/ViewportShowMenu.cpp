@@ -1,0 +1,132 @@
+#include "EnginePCH.h"
+#include "Editor/EditorUI/EditorStyle.h"
+#include "Editor/Viewports/ViewportsPanel.h"
+#include "Editor/Settings/EditorSettings.h"
+#include "Editor/Viewports/ViewportToolbarWidgets.h"
+#include "Components/SkinnedMeshComponent.h"
+#include "Core/StatOverlay.h"
+
+// UE의 표시(Show) 메뉴: 기본값 복원, 뷰포트 통계, 표시 플래그 체크 목록.
+// 보이기/숨기기만 둔다. 품질·성능 옵션은 Render 메뉴가 맡는다. 모든 에디터 뷰에 함께 적용된다.
+void FViewportsPanel::DrawShowMenu()
+{
+    if (!EditorSettings) return;
+    using namespace ViewportToolbarWidgets;
+    auto& Settings = EditorSettings->GetMutableSettings();
+
+    if (IconMenuItem(nullptr, "Use Defaults", false, EIndicator::None))
+    {
+        // Show 메뉴에 보이는 플래그만 기본값으로 되돌린다. Render·Hidden 분류는 다른 곳이 정한다.
+        for (const FShowFlagInfo& Info : FEngineShowFlags::GetAll())
+            if (Info.Category != EShowFlagCategory::Hidden && Info.Category != EShowFlagCategory::Render)
+                Settings.ShowFlags.Set(Info, Info.bEditorDefault);
+    }
+
+    // 뷰포트 통계: 콘솔의 stat 명령과 같은 상태를 켜고 끈다.
+    if (ImGui::BeginMenu("      Viewport Stats"))
+    {
+        struct FStatItem { const char* Label; const char* Command; EStatFlags Flag; };
+        const FStatItem Stats[] = {
+            { "FPS", "stat fps", EStatFlags::FPS },
+            { "Memory", "stat memory", EStatFlags::Memory },
+            { "Profile", "stat profile", EStatFlags::Profile },
+            { "Light", "stat light", EStatFlags::Light },
+            { "Decal", "stat decal", EStatFlags::Decal },
+            { "Skinning", "stat skinning", EStatFlags::Skinning },
+            { "Particle", "stat particle", EStatFlags::Particle },
+            { "Physics", "stat physics", EStatFlags::Physics },
+        };
+        FString Message;
+        if (IconMenuItem(nullptr, "Hide All", false, EIndicator::None))
+            FStatOverlay::ExecCommand("stat none", Message);
+        SectionHeader("Common Stats");
+        for (const FStatItem& Stat : Stats)
+            if (IconMenuItem(nullptr, Stat.Label, FStatOverlay::IsEnabled(Stat.Flag), EIndicator::Check))
+                FStatOverlay::ExecCommand(Stat.Command, Message);
+        ImGui::EndMenu();
+    }
+    // BeginMenu 줄 앞에 통계 아이콘을 덧그린다.
+    {
+        const ImVec2 Min = ImGui::GetItemRectMin(), Max = ImGui::GetItemRectMax();
+        const float CenterY = (Min.y + Max.y) * 0.5f, X = Min.x + EditorStyle::Scale(22.0f);
+        if (const ImTextureID Icon = GetIcon("Stats"); Icon != ImTextureID_Invalid)
+            ImGui::GetWindowDrawList()->AddImage(Icon, { X - EditorStyle::Scale(20.0f), CenterY - IconSize() * 0.5f },
+                { X - EditorStyle::Scale(4.0f), CenterY + IconSize() * 0.5f }, { 0, 0 }, { 1, 1 }, EditorColor::TextSecondary);
+    }
+
+    // 플래그 목록(Render/ShowFlagsValues.h)을 분류별로 그린다.
+    struct FSection { EShowFlagCategory Category; const char* Title; };
+    constexpr FSection Sections[] = {
+        { EShowFlagCategory::Common, "Common Show Flags" },
+        { EShowFlagCategory::Physics, "Physics" },
+        { EShowFlagCategory::PostProcess, "Post Process" },
+        { EShowFlagCategory::Developer, "Developer" },
+    };
+    for (const FSection& Section : Sections)
+    {
+        SectionHeader(Section.Title);
+        for (const FShowFlagInfo& Info : FEngineShowFlags::GetAll())
+        {
+            if (Info.Category != Section.Category) continue;
+            const bool bValue = Settings.ShowFlags.Get(Info);
+            if (IconMenuItem(Info.Icon, Info.DisplayName, bValue, EIndicator::Check))
+                Settings.ShowFlags.Set(Info, !bValue);
+        }
+    }
+    ImGui::Spacing();
+    ImGui::TextDisabled("Applies to all editor views");
+}
+
+// 모든 뷰에 공통인 렌더 품질·성능 옵션
+void FViewportsPanel::DrawRenderMenu()
+{
+    if (!EditorSettings) return;
+    auto& Settings = EditorSettings->GetMutableSettings();
+    ImGui::TextDisabled("Applies to all editor views");
+    ImGui::PushItemWidth(EditorStyle::Scale(160.0f));
+
+    ImGui::SeparatorText("Lighting");
+    const char* Models[] = { "Gouraud", "Lambert", "Phong", "Unlit" };
+    int Lighting = static_cast<int>(Settings.LightingModel);
+    if (ImGui::Combo("Lighting Model", &Lighting, Models, IM_ARRAYSIZE(Models)))
+        Settings.LightingModel = static_cast<ELightingModel>(Lighting);
+    const char* Culling[] = { "Off", "Tiled" };
+    int LightCulling = static_cast<int>(Settings.LightCullingMode);
+    if (ImGui::Combo("Light Culling", &LightCulling, Culling, IM_ARRAYSIZE(Culling)))
+        Settings.LightCullingMode = static_cast<ELightCullingMode>(LightCulling);
+
+    ImGui::SeparatorText("Shadows");
+    ImGui::Checkbox("Cache Shadows", &Settings.bCacheShadows);
+    const char* Quality[] = { "Very Low", "Low", "Medium", "High", "Very High" };
+    ImGui::Combo("Directional", &Settings.DirectionalShadowMapSizeLevel, Quality, IM_ARRAYSIZE(Quality));
+    ImGui::Combo("Point", &Settings.PointShadowMapSizeLevel, Quality, IM_ARRAYSIZE(Quality));
+    ImGui::Combo("Spot", &Settings.SpotShadowMapSizeLevel, Quality, IM_ARRAYSIZE(Quality));
+    const char* Filters[] = { "Off", "8 Samples", "16 Samples", "32 Samples", "PCSS" };
+    int Filter = static_cast<int>(Settings.PcfMode);
+    if (ImGui::Combo("Filter", &Filter, Filters, IM_ARRAYSIZE(Filters)))
+        Settings.PcfMode = static_cast<EPcfMode>(Filter);
+
+    ImGui::SeparatorText("Post Process");
+    ImGui::Checkbox("FXAA", &Settings.ShowFlags.AntiAliasing);
+    ImGui::Checkbox("Eye Adaptation", &Settings.ShowFlags.EyeAdaptation);
+    ImGui::Checkbox("Gamma Correction", &Settings.bGammaCorrection);
+    ImGui::BeginDisabled(!Settings.bGammaCorrection);
+    ImGui::SliderFloat("Display Gamma", &Settings.DisplayGamma, 1.0f, 3.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+    ImGui::EndDisabled();
+    ImGui::SliderFloat("Exposure (EV)", &Settings.ExposureCompensation, -5.0f, 5.0f, "%+.1f", ImGuiSliderFlags_AlwaysClamp);
+
+    ImGui::SeparatorText("Performance");
+    const char* Decals[] = { "Off", "Linear AABB", "BVH" };
+    int DecalCulling = Settings.bDecalBVHCulling ? 2 : (Settings.bDecalCulling ? 1 : 0);
+    if (ImGui::Combo("Decal Broad Phase", &DecalCulling, Decals, IM_ARRAYSIZE(Decals)))
+    {
+        Settings.bDecalCulling = DecalCulling != 0;
+        Settings.bDecalBVHCulling = DecalCulling == 2;
+    }
+    ImGui::Checkbox("Decal Narrow Phase (SAT)", &Settings.bDecalNarrowCulling);
+    ImGui::Checkbox("Decal OBBTree", &Settings.bDecalOBBTree);
+    bool GPU = USkinnedMeshComponent::bUseGPUSkinning;
+    if (ImGui::Checkbox("GPU Skinning", &GPU)) USkinnedMeshComponent::SetGPUSkinningEnabled(GPU);
+
+    ImGui::PopItemWidth();
+}

@@ -1,0 +1,30 @@
+{
+    "BaseColor": {
+        "W": 1.0,
+        "X": 0.800000011920929,
+        "Y": 0.800000011920929,
+        "Z": 0.800000011920929
+    },
+    "BlendMode": "Opaque",
+    "FlipNormalY": false,
+    "MaterialDomain": "Surface",
+    "OpacityMaskClipValue": 0.3330000042915344,
+    "Properties": {},
+    "SamplerState": "LinearWrap",
+    "ShadingModel": "DefaultLit",
+    "Shininess": 32.0,
+    "SpecularColor": {
+        "X": 0.03921568766236305,
+        "Y": 0.03921568766236305,
+        "Z": 0.03921568766236305
+    },
+    "Textures": [
+        "C:/Users/JUNGLE/Desktop/Jungle/JG_Week13/DefaultProject/Content/FBX/Coach1/Textures/Coach1_Diffuse.png",
+        ""
+    ],
+    "TwoSided": false,
+    "UVScrollSpeed": [
+        0.0,
+        0.0
+    ]
+}

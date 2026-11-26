@@ -1,0 +1,30 @@
+{
+    "BaseColor": {
+        "W": 1.0,
+        "X": 0.06,
+        "Y": 0.085,
+        "Z": 0.08
+    },
+    "BlendMode": "Opaque",
+    "FlipNormalY": false,
+    "MaterialDomain": "Surface",
+    "OpacityMaskClipValue": 0.3330000042915344,
+    "Properties": {},
+    "SamplerState": "LinearWrap",
+    "ShadingModel": "DefaultLit",
+    "Shininess": 48.0,
+    "SpecularColor": {
+        "X": 0.25,
+        "Y": 0.28,
+        "Z": 0.26
+    },
+    "Textures": [
+        "",
+        ""
+    ],
+    "TwoSided": false,
+    "UVScrollSpeed": [
+        0.0,
+        0.0
+    ]
+}

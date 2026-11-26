@@ -1,0 +1,53 @@
+#include "EnginePCH.h"
+#include "SkeletalMeshSceneProxy.h"
+
+#include "Components/SkinnedMeshComponent.h"
+#include "Render/SkeletalMeshObject.h"
+
+FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(USkinnedMeshComponent* InComponent)
+	:FPrimitiveSceneProxy(InComponent)
+{
+	bSkinned = true;
+}
+
+void FSkeletalMeshSceneProxy::UpdateRenderState()
+{
+	RenderState.reset();
+	UpdateCommonFlags();
+
+	USkinnedMeshComponent* Skinned = static_cast<USkinnedMeshComponent*>(GetComponent());
+	USkeletalMesh* Asset = Skinned->GetSkeletalMesh();
+	if (!Asset)return;
+
+	TArray<UMaterial*> Materials;
+	Materials.Reserve(Skinned->GetNumMaterials());
+	for (int32 Slot = 0; Slot < Skinned->GetNumMaterials(); ++Slot)
+		Materials.Add(Skinned->GetMaterial(Slot));
+	RenderState = Asset->GetRenderState(Materials);
+}
+
+void FSkeletalMeshSceneProxy::GetDynamicMeshElements(FRenderQueue& Queue, const FViewContext& View)
+{
+	USkinnedMeshComponent* Skinned = static_cast<USkinnedMeshComponent*>(GetComponent());
+	FSkeletalMeshObject* Object = Skinned->GetMeshObject();
+	if (!Object || !RenderState) return;
+
+	const FVertexFactory* VertexFactory = Object->GetVertexFactory(0);
+	if (!VertexFactory || !VertexFactory->IsValid()) return;
+
+	const FVector Delta = GetBounds().Center - View.CameraPosition;
+	const float DistanceSq = Delta.Dot(Delta);
+
+	for (uint32 i = 0; i < RenderState->Sections.Num(); ++i)
+	{
+		const FCachedMeshSection& Section = GetSection(i);
+		FRenderPacket& Packet = Queue.AddDefaulted_GetRef();
+		Packet.Proxy = this;
+		Packet.VertexFactory = VertexFactory;
+		Packet.Material = Section.Material;
+		Packet.StartIndex = Section.StartIndex;
+		Packet.IndexCount = Section.IndexCount;
+		Packet.CameraToParticleDistance = DistanceSq;
+		Packet.DebugWeightBone = Skinned->GetDebugWeightBone();
+	}
+}

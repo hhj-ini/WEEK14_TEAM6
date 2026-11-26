@@ -1,0 +1,144 @@
+#pragma once
+
+#include "Collision/Ray.h"
+#include "Math/Transform.h"
+#include "Components/SceneComponent.h"
+#include "Components/LocalLightComponent.h"
+
+class UCameraComponent;
+class FGizmoRenderer;
+struct FSceneView;
+
+enum class EGizmoMode
+{
+	Location,
+	Rotation,
+	Scale,
+	Select,
+};
+
+enum class EGizmoSpace
+{
+	Local,
+	World,
+};
+
+class FGizmo   // 상태 + 로직
+{
+public:
+	FGizmo();
+	~FGizmo();
+
+	// 이 기즈모를 View의 카메라 기준으로 그린다. 씬 위에 올리는 패스 안에서 부른다.
+	// UE의 FWidget::Render와 같은 자리다. UE는 Render(View, PDI, ViewportClient)이고 이 엔진은 View만 받는다.
+	void Render(const FSceneView* View) const;
+
+	// Gizmo 대상 설정
+	void SetTarget(USceneComponent* InTarget, bool InbUseActorBounds = false)
+	{ 
+		if (Target != InTarget) EndDrag();
+		Target = InTarget;
+		bUseActorBounds = InbUseActorBounds; 
+	}
+	USceneComponent* GetTarget() const { return Target; }
+
+	// Gizmo 모드(이동, 회전, 크기)
+	void SetMode(EGizmoMode InMode) { if (Mode != InMode) EndDrag(); Mode = InMode; }
+	EGizmoMode GetMode() const { return Mode; }
+
+	void SetSpace(EGizmoSpace InSpace) { if (Space != InSpace) EndDrag(); Space = InSpace; }
+	EGizmoSpace GetSpace() const { return Space; }
+
+	// 켜면 이동을 Step 단위로 맞춘다. 조명 반경(거리)도 이 간격을 쓴다.
+	void SetLocationSnap(bool bEnabled, float Step)
+	{
+		bLocationSnapEnabled = bEnabled && Step > 0.0f;
+		LocationSnapSize = bLocationSnapEnabled ? Step : 0.0f;
+	}
+	bool IsLocationSnapEnabled() const { return bLocationSnapEnabled; }
+	float GetLocationSnapSize() const { return LocationSnapSize; }
+
+	// 켜면 회전을 드래그 시작 자세에서 Degrees 단위로 돌린다.
+	void SetRotationSnap(bool bEnabled, float Degrees)
+	{
+		bRotationSnapEnabled = bEnabled && Degrees > 0.0f;
+		RotationSnapDegrees = bRotationSnapEnabled ? Degrees : 0.0f;
+	}
+	// 켜면 크기를 Step 단위로 맞춘다.
+	void SetScaleSnap(bool bEnabled, float Step)
+	{
+		bScaleSnapEnabled = bEnabled && Step > 0.0f;
+		ScaleSnapSize = bScaleSnapEnabled ? Step : 0.0f;
+	}
+
+	// Active View의 Ray와 행렬만 사용해 Hover·Drag 상태를 갱신한다.
+	void Update(const FRay& MouseRay, const FVector2& MousePos,
+		const FMatrix& ViewProj, int ScreenW, int ScreenH,
+		bool bMouseDown, const FVector& CameraLocation, bool bCameraOrthographic, bool bMousePressed = true);
+
+	bool IsUsing() const { return DraggingAxis >= 0; }
+	int GetHoveredAxis() const { return HoveredAxis; }
+
+	int PickAxis(const FVector2& MousePos, const FMatrix& ViewProj, int ScreenW, int ScreenH);
+
+	int PickLinearAxis(const FVector2& MousePos, const FMatrix& ViewProj, int ScreenW, int ScreenH);
+	int PickRotationAxis(const FVector2& MousePos, const FMatrix& ViewProj, int ScreenW, int ScreenH);
+
+
+	void BeginDrag(int Axis, const FRay& MouseRay, const FVector2& MousePos);
+	void UpdateDrag(const FRay& MouseRay, const FVector2& MousePos);
+	void EndDrag();
+
+	float ComputeAngleOnPlane(const FVector& Point, int Axis) const;
+
+	inline FTransform GetTransform() const { return Target ? Target->GetTransform() : FTransform(); }
+	inline FVector GetLocation() const { return Target ? Target->GetRelativeLocation() : FVector(0, 0, 0); }
+	inline FRotator GetRotation() const { return Target ? Target->GetRelativeRotation() : FRotator(0, 0, 0); }
+	inline FVector GetScale() const { return Target ? Target->GetRelativeScale3D() : FVector(0, 0, 0); }
+	FRotator GetAxisRotation() const;
+
+	FVector GetRenderLocation() const;
+	// 원근 View에서만 카메라 거리에 맞춰 크기 보정 위치를 구하고 직교 View는 월드 위치를 유지한다.
+	FVector GetRenderLocationForView(const FVector& CameraLocation, bool bCameraOrthographic) const;
+	FVector GetCameraLocation() const;
+	FVector GetAxisDirection(int Axis) const;
+private:
+	EGizmoMode Mode = EGizmoMode::Location;
+	EGizmoSpace Space = EGizmoSpace::Local;
+	bool bLocationSnapEnabled = false;
+	float LocationSnapSize = 1.0f;
+	bool bRotationSnapEnabled = false;
+	float RotationSnapDegrees = 5.0f;
+	bool bScaleSnapEnabled = false;
+	float ScaleSnapSize = 0.25f;
+	FTransform Transform = FTransform();
+	USceneComponent* Target = nullptr;
+	bool bUseActorBounds = false;
+
+	int HoveredAxis = -1;
+	int DraggingAxis = -1;
+
+	FVector2 DragStartMousePos;
+	FVector DragStartPoint;
+	FVector DragStartLocation;
+	FRotator DragStartRotation;
+	FVector DragStartScale;
+	FVector DragAxisDirection;
+	FVector DragStartRenderLocation;
+
+	FVector DragPlaneNormal;
+
+	FVector ViewCameraLocation{};
+	bool bViewCameraOrthographic = false;
+
+	float DragStartAngle;
+	float RingRadius = 1.0f;
+
+	// Light Component인 경우 Radius를 증감하기 위한 멤버변수와 함수
+	float DragStartRadius = 0.0f;
+	bool ApplyScaleToLight(float Factor);
+	ULocalLightComponent* GetTargetLight() const;
+
+	// 축 메시와 셰이더로 실제 그리기를 맡는 도구. 기즈모마다 하나씩 갖는다.
+	TUniquePtr<FGizmoRenderer> Renderer;
+};

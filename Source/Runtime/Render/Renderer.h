@@ -1,0 +1,79 @@
+#pragma once
+
+#include "RenderPacket.h"
+#include "Render/ObjectConstants.h"
+#include "Texture2D.h"
+#include "Text/Font.h"
+#include "SceneView.h"
+#include "Engine/LightSceneProxy.h"
+#include "Render/Buffer.h"
+#include "MeshPassProcessor.h"
+#include <span>
+
+class FHeightFogRenderer;
+class FFXAARenderer;
+class FCameraOverlayRenderer;
+class FDepthOfFieldRenderer;
+class FExposureMeterRenderer;
+class FLensFlareRenderer;
+
+class FTextRenderer;
+class FSkyboxRenderer;
+
+class FRenderer
+{
+public:
+	// 전방 선언한 패스 객체를 TUniquePtr로 소유하므로 정의는 cpp에 둔다.
+	FRenderer();
+	~FRenderer();
+
+	bool Init();
+
+	// 패스의 의미를 해석하지 않고 준비된 GPU 상태와 드로우만 제출한다.
+	void UploadViewMatrix(const FMatrix& ViewProjection);
+	void DrawMeshes(std::span<const FMeshDrawBatch> Batches);
+
+
+
+	uint8* BeginObjectConstants(uint32 MaxSlots);
+	void EndObjectConstants();
+
+	void InitScenePasses();
+
+	// FSceneRenderer::Render가 쓰는 상주 패스 객체. UE에서는 렌더러 모듈의 글로벌 자원에 해당한다.
+	FHeightFogRenderer* GetHeightFog() const { return HeightFog.get(); }
+	FFXAARenderer* GetFXAA() const { return FXAA.get(); }
+	FCameraOverlayRenderer* GetCameraOverlay() const { return CameraOverlay.get(); }
+	FDepthOfFieldRenderer* GetDepthOfField() const { return DepthOfField.get(); }
+	FExposureMeterRenderer* GetExposureMeter() const { return ExposureMeter.get(); }
+	FLensFlareRenderer* GetLensFlare() const { return LensFlare.get(); }
+	FTextRenderer* GetSceneText() const { return SceneText.get(); }
+	FSkyboxRenderer* GetSkybox() const { return Skybox.get(); }
+	FSkyboxRenderer* GetPreviewSkybox() const { return PreviewSkybox.get(); }
+
+	FConstantBuffer* GetToneMapConstants() const { return ToneMapConstants.get(); }
+	FConstantBuffer* GetDecalConstants() const { return DecalConstants.get(); }
+	
+private:
+	void EnsurePerObjectSlotCapacity(uint32 SlotCount);
+	void BindBatch(const FMeshDrawBatch& Batch);
+	void BindObject(const FMeshDrawBatch& Batch, const FMeshDrawBatch::FItem& Item);
+	TUniquePtr<FConstantBuffer> ObjectCB;
+	TUniquePtr<FConstantBuffer> ViewCB;
+	TUniquePtr<FConstantBuffer> MaterialCB;
+	TUniquePtr<FConstantBuffer> PerObjectSlotCB;
+	TUniquePtr<FConstantBuffer> ToneMapConstants;
+	TUniquePtr<FConstantBuffer> DecalConstants;
+	uint32 PerObjectSlotCapacity = 0;
+	bool bUsePerObjectSlots = false;
+
+	TUniquePtr<FHeightFogRenderer> HeightFog;
+	TUniquePtr<FFXAARenderer> FXAA;
+	TUniquePtr<FCameraOverlayRenderer> CameraOverlay;
+	TUniquePtr<FDepthOfFieldRenderer> DepthOfField;
+	TUniquePtr<FExposureMeterRenderer> ExposureMeter;
+	TUniquePtr<FLensFlareRenderer> LensFlare;
+	TUniquePtr<FTextRenderer> SceneText;
+	TUniquePtr<FSkyboxRenderer> Skybox;
+	TUniquePtr<FSkyboxRenderer> PreviewSkybox;
+};

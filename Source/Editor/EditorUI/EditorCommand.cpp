@@ -1,0 +1,127 @@
+#include "EnginePCH.h"
+#include "Editor/EditorUI/EditorStyle.h"
+#include "EditorCommand.h"
+
+#include "Input/InputSystem.h"
+#include "Render/Texture2D.h"
+
+namespace
+{
+	bool IsModifierDown(EKeyCode Generic, EKeyCode Left, EKeyCode Right)
+	{
+		return FInputSystem::IsKeyDown(Generic) || FInputSystem::IsKeyDown(Left) || FInputSystem::IsKeyDown(Right);
+	}
+}
+
+bool FInputChord::IsPressedThisFrame() const
+{
+	if (!IsValid() || !FInputSystem::IsKeyPressed(Key))
+		return false;
+
+	// 수식키는 "정확히 일치"해야 Alt+P와 P가 구분된다.
+	const bool bCtrlDown = IsModifierDown(EKeyCode::Control, EKeyCode::LControl, EKeyCode::RControl);
+	const bool bAltDown = IsModifierDown(EKeyCode::Alt, EKeyCode::LAlt, EKeyCode::RAlt);
+	const bool bShiftDown = IsModifierDown(EKeyCode::Shift, EKeyCode::LShift, EKeyCode::RShift);
+	return bCtrlDown == bCtrl && bAltDown == bAlt && bShiftDown == bShift;
+}
+
+FString FInputChord::ToString() const
+{
+	if (!IsValid())
+		return "";
+
+	FString Result;
+	if (bCtrl)  Result += "Ctrl+";
+	if (bAlt)   Result += "Alt+";
+	if (bShift) Result += "Shift+";
+
+	const int32 Code = static_cast<int32>(Key);
+	if ((Code >= 'A' && Code <= 'Z') || (Code >= '0' && Code <= '9'))
+		Result += static_cast<char>(Code);
+	else if (Key == EKeyCode::Escape) Result += "Esc";
+	else if (Key == EKeyCode::Pause)  Result += "Pause";
+	else if (Code >= static_cast<int32>(EKeyCode::F1) && Code <= static_cast<int32>(EKeyCode::F12))
+		Result += "F" + std::to_string(Code - static_cast<int32>(EKeyCode::F1) + 1);
+	return Result;
+}
+
+namespace EditorCommandUI
+{
+	ImVec2 GetToolbarButtonSize(float IconSize)
+	{
+		const ImVec2 Padding = ImGui::GetStyle().FramePadding;
+		const float Side = EditorStyle::Scale(IconSize);
+		return { Side + Padding.x * 2.0f, Side + Padding.y * 2.0f };
+	}
+
+	bool ToolbarButton(const char* Id, const FEditorCommand& Command, float IconSize)
+	{
+		if (!Command.IsVisibleNow())
+			return false;
+
+		const bool bEnabled = Command.CanExecuteNow();
+		ImGui::BeginDisabled(!bEnabled);
+
+		bool bClicked = false;
+		if (Command.Icon)
+		{
+			// 흰색 틴트는 "기본 색"이라는 뜻으로 보고 테마 글자색으로 바꾼다. 흰 아이콘이 밝은 테마 배경에 묻히지 않게 한다.
+			const ImVec4& Tint = Command.IconTint;
+			const bool bDefaultTint = Tint.x >= 0.999f && Tint.y >= 0.999f && Tint.z >= 0.999f;
+			const ImVec4 Primary = EditorColor::ToVec4(EditorColor::TextPrimary);
+			const ImVec4 IconColor = bDefaultTint
+				? ImVec4(Primary.x, Primary.y, Primary.z, Tint.w)
+				: Tint;
+			// 비활성일 때는 BeginDisabled가 알파를 낮춰 준다.
+			bClicked = ImGui::ImageButton(Id, (ImTextureID)Command.Icon->GetResource()->GetSRV(),
+				{ EditorStyle::Scale(IconSize), EditorStyle::Scale(IconSize) }, { 0, 0 }, { 1, 1 }, { 0, 0, 0, 0 }, IconColor);
+		}
+		else
+		{
+			ImGui::PushID(Id);
+			ImGui::PushStyleColor(ImGuiCol_Text, Command.IconTint);
+			bClicked = ImGui::Button(Command.Label);
+			ImGui::PopStyleColor();
+			ImGui::PopID();
+		}
+
+		ImGui::EndDisabled();
+
+		// 비활성 버튼에도 툴팁이 뜨도록 AllowWhenDisabled
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+		{
+			const FString Chord = Command.Shortcut.ToString();
+			if (Chord.empty()) ImGui::SetTooltip("%s", Command.Tooltip);
+			else               ImGui::SetTooltip("%s (%s)", Command.Tooltip, Chord.c_str());
+		}
+
+		if (bClicked)
+			Command.TryExecute();
+		return bClicked;
+	}
+
+	bool MenuItem(const FEditorCommand& Command)
+	{
+		if (!Command.IsVisibleNow())
+			return false;
+
+		const FString Chord = Command.Shortcut.ToString();
+		if (ImGui::MenuItem(Command.Label, Chord.empty() ? nullptr : Chord.c_str(), false, Command.CanExecuteNow()))
+			return Command.TryExecute();
+		return false;
+	}
+
+	void ProcessShortcuts(const TArray<const FEditorCommand*>& Commands)
+	{
+		// 텍스트 입력 중에는 단축키를 먹지 않는다 (Details 이름 편집 등)
+		if (ImGui::GetIO().WantTextInput)
+			return;
+
+		for (const FEditorCommand* Command : Commands)
+		{
+			// 같은 키(Pause/Resume)를 공유하는 커맨드가 한 프레임에 둘 다 실행되지 않도록 첫 성공에서 멈춘다.
+			if (Command && Command->Shortcut.IsPressedThisFrame() && Command->TryExecute())
+				return;
+		}
+	}
+}

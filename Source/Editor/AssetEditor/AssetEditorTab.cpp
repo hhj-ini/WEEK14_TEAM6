@@ -1,0 +1,56 @@
+#include "EnginePCH.h"
+#include "Editor/AssetEditor/AssetEditorTab.h"
+#include "Editor/AssetEditor/AssetEditor.h"
+#include <filesystem>
+
+FAssetEditorTab::FAssetEditorTab(FAssetEditor& InEditor) : Editor(InEditor)
+{
+	// ### 뒤 ID는 처음 연 경로로 고정한다. 에디터 안에서 애셋이 바뀌어도(애니메이션 뷰어의 Asset Browser) 같은 창으로 남는다.
+	TabId = FString("###AssetEditor:") + Editor.GetAssetPath();
+}
+
+const char* FAssetEditorTab::GetTabName() const
+{
+	// 보이는 이름은 지금 경로로 만든다. 경로가 바뀐 때만 다시 만든다.
+	if (NamedPath != Editor.GetAssetPath())
+	{
+		NamedPath = Editor.GetAssetPath();
+		const FString Filename = std::filesystem::path(NamedPath).filename().string();
+		TabName = Filename + " (" + Editor.GetEditorTypeName() + ")" + TabId;
+	}
+	return TabName.c_str();
+}
+
+bool FAssetEditorTab::ConfirmClose()
+{
+	return Editor.ConfirmClose();
+}
+
+bool FAssetEditorTab::HasUnsavedChanges() const
+{
+	return Editor.IsDirty();
+}
+
+void FAssetEditorTab::OnCloseRequested()
+{
+	Editor.Close();
+}
+
+void FAssetEditorTab::DrawMenuBar()
+{
+	// 기본 메뉴 바. 레벨 에디터와 같이 File 메뉴부터 둔다.
+
+	if (ImGui::BeginMenu("File"))
+	{
+		if (ImGui::MenuItem("Close Editor"))
+		{
+			Editor.Close();
+		}
+
+		ImGui::EndMenu();
+	}
+}
+
+void FAssetEditorTab::OnRender(bool bActive)
+{
+}

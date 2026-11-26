@@ -1,0 +1,384 @@
+#include "EnginePCH.h"
+#include "Components/SceneComponent.h"
+
+#include "GameFramework/Actor.h"
+#include "Engine/World.h"
+#include "Physics/PhysScene.h"
+
+namespace
+{
+	void UpdateChildVisibility(USceneComponent* Root, bool bPropagate, bool bVisible, bool bHidden)
+	{
+		TArray<USceneComponent*> Pending = Root->GetAttachChildren();
+		while (!Pending.IsEmpty())
+		{
+			USceneComponent* Child = Pending[Pending.Num() - 1];
+			Pending.RemoveLast();
+			if (!Child) continue;
+			if (bPropagate)
+			{
+				if (bVisible) Child->UActorComponent::SetVisibility(Root->IsVisible());
+				if (bHidden) Child->UActorComponent::SetHiddenInGame(Root->IsHiddenInGame());
+			}
+			Child->MarkRenderStateDirty();
+			for (USceneComponent* Descendant : Child->GetAttachChildren()) Pending.Add(Descendant);
+		}
+	}
+}
+
+USceneComponent::~USceneComponent()
+{
+	TArray<USceneComponent*> Children = AttachChildren;
+	DetachFromParent();
+	for (USceneComponent* Child : Children)
+	{
+		Child->AttachParent = nullptr;
+	}
+	AttachChildren.Reset();
+
+	DetachFromParent();
+}
+
+void USceneComponent::SetRelativeLocationAndRotation(const FVector& NewLocation, const FRotator& NewRotation)
+{
+	Transform.Location = NewLocation;
+	Transform.Rotation = RelativeRotationCache.RotatorToQuat(NewRotation);
+	MarkTransformDirty();
+}
+
+void USceneComponent::PostEditChangeProperty(const FProperty& Property)
+{
+	Super::PostEditChangeProperty(Property);
+	if (Property.Name == "Transform") 
+		MarkTransformDirty();
+	else if (Property.Name == "bVisible" || Property.Name == "bHiddenInGame")
+		UpdateChildVisibility(this, false, false, false);
+}
+
+bool USceneComponent::IsShown(bool bGameView) const
+{
+	for (const USceneComponent* Component = this; Component; Component = Component->AttachParent)
+		if (!Component->UActorComponent::IsShown(bGameView)) return false;
+	return true;
+}
+
+void USceneComponent::SetVisibility(bool bNewVisibility, EVisibilityPropagation Propagation)
+{
+	const bool bChanged = bVisible != bNewVisibility;
+	Super::SetVisibility(bNewVisibility);
+	if (bChanged || Propagation == EVisibilityPropagation::Propagate)
+		UpdateChildVisibility(this, Propagation == EVisibilityPropagation::Propagate, true, false);
+}
+
+void USceneComponent::SetHiddenInGame(bool bNewHidden, EVisibilityPropagation Propagation)
+{
+	const bool bChanged = bHiddenInGame != bNewHidden;
+	Super::SetHiddenInGame(bNewHidden);
+	if (bChanged || Propagation == EVisibilityPropagation::Propagate)
+		UpdateChildVisibility(this, Propagation == EVisibilityPropagation::Propagate, false, true);
+}
+
+void USceneComponent::SetupAttachment(USceneComponent* InParent, EAttachmentRule Rule)
+{
+	if (InParent == this || AttachParent == InParent) return;
+
+	// 순환 체크
+	for (USceneComponent* Parent = InParent; Parent != nullptr; Parent = Parent->AttachParent)
+		if (Parent == this) return;
+
+	if (Rule == EAttachmentRule::KeepWorld)
+	{
+		FTransform WorldTransform(GetWorldRotation(), GetWorldLocation(), GetWorldScale3D());
+		DetachFromParent(Rule);
+		AttachParent = InParent;
+		if (AttachParent)
+		{
+			AttachParent->AttachChildren.Add(this);
+		}
+		const FTransform ParentTransform = AttachParent
+            ? FTransform(AttachParent->GetWorldRotation(), AttachParent->GetWorldLocation(), AttachParent->GetWorldScale3D())
+            : FTransform::Identity;
+        SetTransform(WorldTransform.GetRelativeTransform(ParentTransform));
+	}
+	else
+	{
+		DetachFromParent(Rule);
+		AttachParent = InParent;
+		if (AttachParent)
+		{
+			AttachParent->AttachChildren.Add(this);
+		}
+	}
+
+	if (Rule == EAttachmentRule::SnapToTarget)
+	{
+		SetTransform(FTransform::Identity);
+	}
+
+	MarkTransformDirty();
+	MarkRenderStateDirty();
+	UpdateChildVisibility(this, false, false, false);
+}
+
+void USceneComponent::DetachFromParent(EAttachmentRule Rule)
+{
+	if (!AttachParent) return;
+
+	if (Rule == EAttachmentRule::KeepWorld)
+	{
+		FTransform WorldTransform(GetWorldRotation(), GetWorldLocation(), GetWorldScale3D());
+		TArray<USceneComponent*>& Siblings = AttachParent->AttachChildren;
+		for (uint32 i = 0;i < Siblings.Num(); ++i)
+		{
+			if (Siblings[i] == this)
+			{
+				Siblings.RemoveAt(i, 1);
+				break;
+			}
+		}
+		AttachParent = nullptr;
+		SetTransform(WorldTransform);
+	}
+	else
+	{
+		TArray<USceneComponent*>& Siblings = AttachParent->AttachChildren;
+		for (uint32 i = 0;i < Siblings.Num(); ++i)
+		{
+			if (Siblings[i] == this)
+			{
+				Siblings.RemoveAt(i, 1);
+				break;
+			}
+		}
+		AttachParent = nullptr;
+	}
+	
+	MarkTransformDirty();
+	MarkRenderStateDirty();
+	UpdateChildVisibility(this, false, false, false);
+}
+
+FRotator USceneComponent::GetWorldRotation() const
+{
+	if (AttachParent)
+	{
+		FQuat ParentQuat = AttachParent->GetWorldRotation().Quaternion();
+		FQuat LocalQuat = Transform.GetOrientation();
+
+		return (ParentQuat * LocalQuat).ToFRotator();
+	}
+
+	return GetRelativeRotation();
+}
+
+FVector USceneComponent::GetWorldLocation() const
+{
+	FMatrix WorldMatrix = GetWorldMatrix();
+
+	return FVector(WorldMatrix[3][0], WorldMatrix[3][1], WorldMatrix[3][2]);
+}
+
+FVector USceneComponent::GetWorldScale3D() const
+{
+	if (AttachParent)
+	{
+		FVector ParentScale = AttachParent->GetWorldScale3D();
+
+		return FVector(
+			Transform.Scale.X * ParentScale.X,
+			Transform.Scale.Y * ParentScale.Y,
+			Transform.Scale.Z * ParentScale.Z
+		);
+	}
+
+	return Transform.Scale;
+}
+
+FMatrix USceneComponent::GetWorldMatrix() const
+{
+	if (!AttachParent)
+	{
+		return Transform.GetLocalMatrix();
+	}
+
+	const FVector WorldLocation = 
+		AttachParent->GetWorldMatrix().TransformPosition(Transform.Location);
+
+	const FQuat WorldRotation = 
+		AttachParent->GetWorldRotation().Quaternion() * Transform.GetOrientation();
+
+	const FVector WorldScale =
+		Transform.Scale * AttachParent->GetWorldScale3D();
+
+	return FTransform(WorldRotation, WorldLocation, WorldScale).GetLocalMatrix();
+}
+
+void USceneComponent::SetWorldTransform(const FMatrix& InWorldMatrix, bool bSweep)
+{
+	FMatrix LocalMatrix = InWorldMatrix;
+	if (AttachParent)
+	{
+		FMatrix ParentWorldMatrix = AttachParent->GetWorldMatrix();
+		LocalMatrix = InWorldMatrix * ParentWorldMatrix.Inverse();
+	}
+
+	Transform.Location = FVector(LocalMatrix[3][0], LocalMatrix[3][1], LocalMatrix[3][2]);
+
+	FVector XAxis(LocalMatrix[0][0], LocalMatrix[0][1], LocalMatrix[0][2]);
+	FVector YAxis(LocalMatrix[1][0], LocalMatrix[1][1], LocalMatrix[1][2]);
+	FVector ZAxis(LocalMatrix[2][0], LocalMatrix[2][1], LocalMatrix[2][2]);
+
+	const float XAxisSize = XAxis.Size();
+	const float YAxisSize = YAxis.Size();
+	const float ZAxisSize = ZAxis.Size();
+
+	Transform.Scale = FVector(XAxisSize, YAxisSize, ZAxisSize);
+
+	XAxis = XAxis.Normalized();
+	YAxis = YAxis.Normalized();
+	ZAxis = ZAxis.Normalized();
+
+	FMatrix RotationMatrix = FMatrix::Identity;
+	RotationMatrix.SetAxis(0, XAxis);
+	RotationMatrix.SetAxis(1, YAxis);
+	RotationMatrix.SetAxis(2, ZAxis);
+
+	Transform.Rotation = RelativeRotationCache.RotatorToQuat(MatrixToRotator(RotationMatrix));
+		
+	MarkTransformDirty();
+}
+
+void USceneComponent::SetWorldLocation(FVector NewLocation, bool bSweep)
+{
+	FVector NewRelLocation = NewLocation;
+
+	if (GetAttachParent() != nullptr)
+	{		
+		NewRelLocation = GetAttachParent()->GetWorldMatrix().Inverse().TransformPosition(NewRelLocation);
+	}
+
+	SetRelativeLocation(NewRelLocation);
+}
+
+void USceneComponent::SetWorldRotation(FRotator NewRotation, bool bSweep)
+{
+	FRotator NewRelRotation = NewRotation;
+
+	if (GetAttachParent() != nullptr)
+	{
+		FQuat NewRelQuat = GetAttachParent()->GetWorldRotation().Quaternion().Inverse() * NewRelRotation.Quaternion();
+		NewRelRotation = NewRelQuat.ToFRotator();
+	}
+
+	SetRelativeRotation(NewRelRotation);
+}
+
+void USceneComponent::SetWorldLocationAndRotation(FVector NewLocation, FRotator NewRotation, bool bSweep)
+{
+	FVector NewRelLocation = NewLocation;
+	FRotator NewRelRotation = NewRotation;
+
+	if (GetAttachParent() != nullptr)
+	{
+		NewRelLocation = GetAttachParent()->GetWorldMatrix().Inverse().TransformPosition(NewRelLocation);
+
+		FQuat NewRelQuat = GetAttachParent()->GetWorldRotation().Quaternion().Inverse() * NewRelRotation.Quaternion();
+		NewRelRotation = NewRelQuat.ToFRotator();
+	}
+
+	SetRelativeLocationAndRotation(NewRelLocation, NewRelRotation);
+}
+
+void USceneComponent::SetWorldScale3D(FVector NewScale)
+{
+}
+
+bool USceneComponent::MoveComponent(const FVector& Delta, const FRotator& NewRotation, bool bSweep, FHitResult* Hit)
+{
+	FHitResult LocalHit(1.0f);
+	FHitResult& Result = Hit ? *Hit : LocalHit;
+	Result = FHitResult(1.0f);
+	const FVector Start = GetWorldLocation();
+	FVector Destination = Start + Delta;
+	bool bBlocked = false;
+	AActor* Owner = GetOwner();
+	if (bSweep && Delta.SizeSquared() > SMALL_NUMBER && Owner && Owner->GetActorEnableCollision())
+	{
+		if (UWorld* World = Owner->GetWorld())
+		{
+			Result.Init(Start, Destination);
+			// 물리 씬의 충돌 형상(StaticMesh 볼록/삼각형, Shape 컴포넌트, 캐릭터 캡슐)에 이 컴포넌트 모양을 밀어 본다.
+			// 물리 씬이 없으면 막을 것도 없으므로 그대로 옮긴다.
+			FPhysScene* PhysicsScene = World->GetPhysicsScene();
+			if (PhysicsScene && PhysicsScene->IsValid())
+			{
+				FCollisionQueryParams Params;
+				Params.IgnoreActor = Owner;                  // 자기 액터의 바디(자기 캡슐 등)는 제외
+				Params.bIgnoreTouchesMovingAway = true;      // 딛고 선 바닥에 걸려 옆으로 못 가는 일을 막는다
+				bBlocked = PhysicsScene->SweepSingle(GetCollisionShape(), GetWorldRotation().Quaternion(),
+					Start, Destination, Result, Params);
+			}
+			if (bBlocked)
+				Destination = Start + Delta * Result.Time + Result.ImpactNormal * 0.001f;
+		}
+	}
+	SetWorldLocationAndRotation(Destination, NewRotation, false);
+	return !bBlocked;
+}
+
+float USceneComponent::GetCollisionRadius() const
+{
+	if (CollisionRadiusOverride >= 0.0f) return CollisionRadiusOverride;
+	const FBox Bounds = CalcBounds();
+	const FVector Extent = (Bounds.Max - Bounds.Min) * 0.5f;
+	if (Extent.SizeSquared() <= SMALL_NUMBER) return 10.0f;
+	return std::min({ Extent.X, Extent.Y, Extent.Z });
+}
+
+void USceneComponent::MarkTransformDirty()
+{
+	OnTransformDirty();         
+
+	for (USceneComponent* Child : AttachChildren)
+		Child->MarkTransformDirty();      // 부모가 움직이면 자식의 월드 행렬도 바뀐다
+}
+
+void USceneComponent::Serialize(FStructuredArchive::FRecord Record)
+{
+    FTransform SavedWorldTransform(GetWorldRotation(), GetWorldLocation(), GetWorldScale3D());
+	Super::Serialize(Record);   // UActorComponent: Owner까지 처리됨
+
+	FArchive& Ar = Record.GetUnderlyingArchive();
+	if (Ar.HasAnyPortFlags(EPropertyPortFlags::PPF_Duplicate))
+	{
+		UObject* ParentObj = AttachParent;
+		Record << SA_VALUE("AttachParent", ParentObj);
+		AttachParent = static_cast<USceneComponent*>(ParentObj);
+
+        const bool bPIE = Ar.HasAnyPortFlags(EPropertyPortFlags::PPF_DuplicateForPIE);
+        FTransform WorldTransform = SavedWorldTransform;
+        if (!bPIE) Record << SA_VALUE("DetachedWorldTransform", WorldTransform);
+        TArray<USceneComponent*> SavedChildren;
+        if (Ar.IsSaving())
+            for (USceneComponent* Child : AttachChildren)
+                if (bPIE || (Child && Child->GetOuter() == GetOuter())) SavedChildren.Add(Child);
+        int32 Num = SavedChildren.Num();
+        FStructuredArchive::FArray ChildArray = Record.EnterArray("AttachChildren", Num);
+        if (Ar.IsLoading()) AttachChildren.SetNum(Num);
+        for (int32 i = 0; i < Num; ++i)
+        {
+            UObject* Obj = Ar.IsSaving() ? SavedChildren[i] : nullptr;
+            ChildArray.EnterElement() << Obj;
+            if (Ar.IsLoading()) AttachChildren[i] = static_cast<USceneComponent*>(Obj);
+        }
+        if (Ar.IsLoading() && !bPIE && AttachParent && AttachParent->GetOuter() != GetOuter())
+        {
+            // A standalone actor copy is independent of the original actor's parent.
+            AttachParent = nullptr;
+            SetTransform(WorldTransform);
+        }
+	}
+}
+
+
+

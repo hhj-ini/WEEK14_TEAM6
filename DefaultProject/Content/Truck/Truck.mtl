@@ -1,0 +1,30 @@
+newmtl SafetyOrange
+Kd 0.83 0.265 0.052
+
+newmtl Graphite
+Kd 0.105 0.119 0.134
+
+newmtl FrameSteel
+Kd 0.2 0.246 0.27
+
+newmtl BrushedSteel
+Kd 0.55 0.6 0.61
+
+newmtl Rubber
+Kd 0.047 0.053 0.057
+
+newmtl BedSteel
+Kd 0.28 0.34 0.37
+
+newmtl Glass
+Kd 0.104 0.252 0.29
+
+newmtl WarningYellow
+Kd 0.84 0.59 0.13
+
+newmtl TailRed
+Kd 0.73 0.09 0.05
+
+newmtl LampWhite
+Kd 0.95 0.92 0.78
+

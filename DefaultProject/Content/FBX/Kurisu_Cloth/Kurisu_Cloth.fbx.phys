@@ -1,0 +1,1646 @@
+{
+    "Bodies": [
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -0.8809843063354492,
+                            "Y": -1.4229135513305664,
+                            "Z": 5.098129749298096
+                        },
+                        "Length": 6.4868927001953125,
+                        "Radius": 8.786252975463867,
+                        "Rotation": {
+                            "W": 0.70710688829422,
+                            "X": 0.7071066498756409,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-Pelvis",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 8.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 0.6188371181488037,
+                            "Y": -0.024509906768798828,
+                            "Z": 12.966243743896484
+                        },
+                        "Length": 2.5649375915527344,
+                        "Radius": 7.416643142700195,
+                        "Rotation": {
+                            "W": 0.70710688829422,
+                            "X": 0.7071066498756409,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-Spine",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 5.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 1.5015325546264648,
+                            "Y": -0.032575130462646484,
+                            "Z": 3.4445085525512695
+                        },
+                        "Length": 1.5582008361816406,
+                        "Radius": 8.50538444519043,
+                        "Rotation": {
+                            "W": 0.70710688829422,
+                            "X": 0.7071066498756409,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-Spine1",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 5.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -0.679645299911499,
+                            "Y": 0.7113471031188965,
+                            "Z": 6.3191609382629395
+                        },
+                        "Length": 4.670061111450195,
+                        "Radius": 6.9656267166137695,
+                        "Rotation": {
+                            "W": 0.70710688829422,
+                            "X": 0.7071066498756409,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-Spine2",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 5.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 1.3245282173156738,
+                            "Y": 0.8467459678649902,
+                            "Z": 7.037578582763672
+                        },
+                        "Length": 1.6507644653320312,
+                        "Radius": 12.451272964477539,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-Head",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 4.5,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 0.22908902168273926,
+                            "Y": 1.8617466688156128,
+                            "Z": 2.3933451175689697
+                        },
+                        "Length": 2.4464187622070312,
+                        "Radius": 4.389947891235352,
+                        "Rotation": {
+                            "W": 0.70710688829422,
+                            "X": 0.7071066498756409,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-L-Clavicle",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 1.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 0.9228811264038086,
+                            "Y": -0.20270800590515137,
+                            "Z": 8.586244583129883
+                        },
+                        "Length": 10.35683822631836,
+                        "Radius": 5.419273376464844,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-L-UpperArm",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 1.8,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 1.3531560897827148,
+                            "Y": 0.2811760902404785,
+                            "Z": 13.345417976379395
+                        },
+                        "Length": 15.265957832336426,
+                        "Radius": 5.842834949493408,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-L-Forearm",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 1.2,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 2.1447741985321045,
+                            "Y": 1.8745834827423096,
+                            "Z": 7.391998291015625
+                        },
+                        "Length": 3.12530517578125,
+                        "Radius": 5.393787384033203,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-L-Hand",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 0.4,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 0.3486025333404541,
+                            "Y": -2.277989387512207,
+                            "Z": 4.376335144042969
+                        },
+                        "Length": 1.1273422241210938,
+                        "Radius": 4.55544376373291,
+                        "Rotation": {
+                            "W": 0.70710688829422,
+                            "X": 0.7071066498756409,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-R-Clavicle",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 1.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 0.7363979816436768,
+                            "Y": 0.9232707023620605,
+                            "Z": 8.45468521118164
+                        },
+                        "Length": 10.927099227905273,
+                        "Radius": 5.178177833557129,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-R-UpperArm",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 1.8,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 1.2119874954223633,
+                            "Y": 0.1779332160949707,
+                            "Z": 13.355846405029297
+                        },
+                        "Length": 15.340959548950195,
+                        "Radius": 5.758648872375488,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-R-Forearm",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 1.2,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 2.0568161010742188,
+                            "Y": -1.8234140872955322,
+                            "Z": 7.391918182373047
+                        },
+                        "Length": 3.021869659423828,
+                        "Radius": 5.44544792175293,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-R-Hand",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 0.4,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 0.5056025981903076,
+                            "Y": 0.5537171363830566,
+                            "Z": 17.075387954711914
+                        },
+                        "Length": 27.771116256713867,
+                        "Radius": 6.92496395111084,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-L-Thigh",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 6.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -1.285183310508728,
+                            "Y": 0.6392291784286499,
+                            "Z": 21.844594955444336
+                        },
+                        "Length": 26.24492073059082,
+                        "Radius": 4.929631233215332,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-L-Calf",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 3.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -4.905709266662598,
+                            "Y": 0.08067584037780762,
+                            "Z": 6.040373802185059
+                        },
+                        "Length": 8.96727180480957,
+                        "Radius": 6.386425018310547,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-L-Foot",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 0.8,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 0.42087745666503906,
+                            "Y": -0.7796809673309326,
+                            "Z": 16.484806060791016
+                        },
+                        "Length": 28.581634521484375,
+                        "Radius": 7.126594543457031,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-R-Thigh",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 6.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -1.4682408571243286,
+                            "Y": -0.47464096546173096,
+                            "Z": 21.866737365722656
+                        },
+                        "Length": 26.371295928955078,
+                        "Radius": 4.888524532318115,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-R-Calf",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 3.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -4.753906726837158,
+                            "Y": -0.017157554626464844,
+                            "Z": 6.320763111114502
+                        },
+                        "Length": 9.036343574523926,
+                        "Radius": 6.357224941253662,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "Bip001-R-Foot",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.4,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.05,
+                    "MassInKgOverride": 0.8,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        }
+    ],
+    "CollisionDisable": [
+        {
+            "A": "Bip001-Spine",
+            "B": "Bip001-Pelvis"
+        },
+        {
+            "A": "Bip001-Spine1",
+            "B": "Bip001-Spine"
+        },
+        {
+            "A": "Bip001-Spine2",
+            "B": "Bip001-Spine1"
+        },
+        {
+            "A": "Bip001-Head",
+            "B": "Bip001-Spine2"
+        },
+        {
+            "A": "Bip001-L-Clavicle",
+            "B": "Bip001-Spine2"
+        },
+        {
+            "A": "Bip001-L-UpperArm",
+            "B": "Bip001-L-Clavicle"
+        },
+        {
+            "A": "Bip001-L-Forearm",
+            "B": "Bip001-L-UpperArm"
+        },
+        {
+            "A": "Bip001-L-Hand",
+            "B": "Bip001-L-Forearm"
+        },
+        {
+            "A": "Bip001-R-Clavicle",
+            "B": "Bip001-Spine2"
+        },
+        {
+            "A": "Bip001-R-UpperArm",
+            "B": "Bip001-R-Clavicle"
+        },
+        {
+            "A": "Bip001-R-Forearm",
+            "B": "Bip001-R-UpperArm"
+        },
+        {
+            "A": "Bip001-R-Hand",
+            "B": "Bip001-R-Forearm"
+        },
+        {
+            "A": "Bip001-L-Thigh",
+            "B": "Bip001-Pelvis"
+        },
+        {
+            "A": "Bip001-L-Calf",
+            "B": "Bip001-L-Thigh"
+        },
+        {
+            "A": "Bip001-L-Foot",
+            "B": "Bip001-L-Calf"
+        },
+        {
+            "A": "Bip001-R-Thigh",
+            "B": "Bip001-Pelvis"
+        },
+        {
+            "A": "Bip001-R-Calf",
+            "B": "Bip001-R-Thigh"
+        },
+        {
+            "A": "Bip001-R-Foot",
+            "B": "Bip001-R-Calf"
+        },
+        {
+            "A": "Bip001-Spine1",
+            "B": "Bip001-L-Clavicle"
+        },
+        {
+            "A": "Bip001-Spine1",
+            "B": "Bip001-R-Clavicle"
+        },
+        {
+            "A": "Bip001-Spine2",
+            "B": "Bip001-R-UpperArm"
+        }
+    ],
+    "Constraints": [
+        {
+            "Bone1": "Bip001-Spine",
+            "Bone2": "Bip001-Pelvis",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 1.4769313335418701,
+                        "Y": -0.7195478081703186,
+                        "Z": 9.217230796813965
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": -0.9999999403953552,
+                        "Z": 3.5762786865234375e-7
+                    },
+                    "PriAxis2": {
+                        "X": -7.876766872435738e-7,
+                        "Y": -0.9999999999205709,
+                        "Z": 0.00001257926653424531
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.998662715034483,
+                        "Y": -1.362884469321266e-7,
+                        "Z": 0.05169895163285447
+                    },
+                    "Swing1LimitDegrees": 5.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 8.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 12.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-Spine1",
+            "Bone2": "Bip001-Spine",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.000004814938165509375,
+                        "Y": -0.000014939803804736584,
+                        "Z": 20.95172119140625
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": -0.9999999403953552,
+                        "Z": 3.5762786865234375e-7
+                    },
+                    "PriAxis2": {
+                        "X": 1.1408119572065481e-10,
+                        "Y": -0.9999999998327751,
+                        "Z": -0.00001828796593614025
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.9975366219576698,
+                        "Y": 0.0000012829709889810675,
+                        "Z": -0.07014761472519819
+                    },
+                    "Swing1LimitDegrees": 5.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 8.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 12.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-Spine2",
+            "Bone2": "Bip001-Spine1",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.0000025304036626039306,
+                        "Y": 0.0000012172367860330269,
+                        "Z": 9.092902183532715
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": -0.9999999403953552,
+                        "Z": 3.5762786865234375e-7
+                    },
+                    "PriAxis2": {
+                        "X": -0.000003964091101483445,
+                        "Y": -0.9999999999664442,
+                        "Z": 0.00000716921337659829
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.9859466472989409,
+                        "Y": -0.000005106074659517704,
+                        "Z": -0.16706049399515704
+                    },
+                    "Swing1LimitDegrees": 4.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 6.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 10.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-Head",
+            "Bone2": "Bip001-Spine2",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 2.323441982269287,
+                        "Y": -0.000016714153389330022,
+                        "Z": 14.849967956542969
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.1361311234002729,
+                        "Y": 3.061791032338853e-9,
+                        "Z": 0.9906908282818508
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.9906908282818508,
+                        "Y": -3.6897309360681687e-10,
+                        "Z": -0.1361311234002729
+                    },
+                    "Swing1LimitDegrees": 15.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 27.5,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 35.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-L-Clavicle",
+            "Bone2": "Bip001-Spine2",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.4251137375831604,
+                        "Y": -3.1028432846069336,
+                        "Z": 4.304446697235107
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": -0.9999999403953552,
+                        "Z": 3.5762786865234375e-7
+                    },
+                    "PriAxis2": {
+                        "X": -0.9794947504997253,
+                        "Y": 0.20123076438903809,
+                        "Z": 0.009767889976501465
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": -0.005653738975524902,
+                        "Y": 0.021008402109146118,
+                        "Z": -0.9997631311416626
+                    },
+                    "Swing1LimitDegrees": 12.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 12.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 8.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-L-UpperArm",
+            "Bone2": "Bip001-L-Clavicle",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.000017404558093403466,
+                        "Y": 0.0,
+                        "Z": 8.254103660583496
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.24889757485517683,
+                        "Y": 0.6236589001624141,
+                        "Z": 0.7410125326061767
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.9598241239473296,
+                        "Y": -0.05647877204403574,
+                        "Z": -0.27485959942694266
+                    },
+                    "Swing1LimitDegrees": 62.5,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 67.5,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 45.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-L-Forearm",
+            "Bone2": "Bip001-L-UpperArm",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.000095367431640625,
+                        "Y": -0.00003433227175264619,
+                        "Z": 18.982091903686523
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": 1.7328086178868222e-7,
+                        "Y": 0.9396926309789012,
+                        "Z": 0.3420201153206057
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.9999999999998717,
+                        "Y": -7.549514873384195e-15,
+                        "Z": -5.066393669039174e-7
+                    },
+                    "Swing1LimitDegrees": 75.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 0.0,
+                    "Swing2Motion": "Locked",
+                    "TwistLimitDegrees": 30.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-L-Hand",
+            "Bone2": "Bip001-L-Forearm",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 0.00005340576171875,
+                        "Y": 0.000030517574487021193,
+                        "Z": 25.951772689819336
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.0000025928015929821413,
+                        "Y": -2.682205320070352e-7,
+                        "Z": 1.0
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 1.0,
+                        "Y": 2.3841889174036623e-7,
+                        "Z": -0.0000025928015929821413
+                    },
+                    "Swing1LimitDegrees": 25.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 55.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 10.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-R-Clavicle",
+            "Bone2": "Bip001-Spine2",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -1.8875184059143066,
+                        "Y": 2.3454322814941406,
+                        "Z": 4.389947891235352
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": -0.9999999403953552,
+                        "Z": 3.5762786865234375e-7
+                    },
+                    "PriAxis2": {
+                        "X": 0.9794951677322388,
+                        "Y": 0.20122861862182617,
+                        "Z": -0.009769171476364136
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": -0.0056531429290771484,
+                        "Y": -0.021017462015151978,
+                        "Z": -0.9997628927230835
+                    },
+                    "Swing1LimitDegrees": 12.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 12.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 8.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-R-UpperArm",
+            "Bone2": "Bip001-R-Clavicle",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 0.000013351442248676904,
+                        "Y": -9.536745437799254e-7,
+                        "Z": 8.254120826721191
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.2488867457673658,
+                        "Y": -0.6236574979248551,
+                        "Z": 0.7410173500421161
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.9598276745961695,
+                        "Y": 0.05647544762591406,
+                        "Z": -0.2748478831913442
+                    },
+                    "Swing1LimitDegrees": 62.5,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 67.5,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 45.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-R-Forearm",
+            "Bone2": "Bip001-R-UpperArm",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.000021934511096333154,
+                        "Y": 0.000005722046807932202,
+                        "Z": 18.982248306274414
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.0000011517051093817623,
+                        "Y": -0.9396926615578028,
+                        "Z": 0.34202003130384956
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.9999999999953726,
+                        "Y": 1.192094458696298e-7,
+                        "Z": -0.00000303983618719898
+                    },
+                    "Swing1LimitDegrees": 75.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 0.0,
+                    "Swing2Motion": "Locked",
+                    "TwistLimitDegrees": 30.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-R-Hand",
+            "Bone2": "Bip001-R-Forearm",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.00002574920654296875,
+                        "Y": 0.000015258790881489404,
+                        "Z": 25.951919555664062
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": 1.4901158351676713e-7,
+                        "Y": 2.9802318834981634e-8,
+                        "Z": 1.0
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 1.0,
+                        "Y": -2.2204456257338395e-15,
+                        "Z": -1.4901158351676713e-7
+                    },
+                    "Swing1LimitDegrees": 25.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 55.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 10.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-L-Thigh",
+            "Bone2": "Bip001-Pelvis",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 1.0138840675354004,
+                        "Y": -6.676655292510986,
+                        "Z": -0.6828675270080566
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.6295387022652333,
+                        "Y": -0.10910291080904908,
+                        "Z": -0.7692708087554071
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.774146170250182,
+                        "Y": 0.003756425123009254,
+                        "Z": 0.6329957317054128
+                    },
+                    "Swing1LimitDegrees": 18.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 60.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 10.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-L-Calf",
+            "Bone2": "Bip001-L-Thigh",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 0.00003626943362178281,
+                        "Y": 0.00004854799044551328,
+                        "Z": 36.03395080566406
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": -0.9616262113324436,
+                        "Y": -0.003102463999298812,
+                        "Z": 0.274345410742632
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.2743629096952583,
+                        "Y": -0.011432204660851611,
+                        "Z": 0.9615582657749575
+                    },
+                    "Swing1LimitDegrees": 0.0,
+                    "Swing1Motion": "Locked",
+                    "Swing2LimitDegrees": 69.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 3.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-L-Foot",
+            "Bone2": "Bip001-L-Calf",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.00003385544187040068,
+                        "Y": 0.000008493661880493164,
+                        "Z": 42.09296417236328
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.8700771791571911,
+                        "Y": 0.030783625293519884,
+                        "Z": 0.4919533216918588
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.4929074701387126,
+                        "Y": -0.048636093241437674,
+                        "Z": -0.8687213340972261
+                    },
+                    "Swing1LimitDegrees": 6.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 20.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 6.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-R-Thigh",
+            "Bone2": "Bip001-Pelvis",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -1.0138884782791138,
+                        "Y": 6.676704406738281,
+                        "Z": 0.6827378273010254
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.6295648918057044,
+                        "Y": 0.10923212654330758,
+                        "Z": -0.7692310378140615
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.7741254312948639,
+                        "Y": -0.0038749554592145924,
+                        "Z": 0.6330203798794551
+                    },
+                    "Swing1LimitDegrees": 18.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 60.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 10.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-R-Calf",
+            "Bone2": "Bip001-R-Thigh",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.000005751849130319897,
+                        "Y": 0.000015914440155029297,
+                        "Z": 36.033851623535156
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": -0.9616441847385118,
+                        "Y": 0.0031051478065458812,
+                        "Z": 0.27428237277612694
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.2742999080686163,
+                        "Y": 0.011431563817235275,
+                        "Z": 0.9615762475135506
+                    },
+                    "Swing1LimitDegrees": 0.0,
+                    "Swing1Motion": "Locked",
+                    "Swing2LimitDegrees": 69.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 3.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "Bip001-R-Foot",
+            "Bone2": "Bip001-R-Calf",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.00002789497739286162,
+                        "Y": -0.000001311302071371756,
+                        "Z": 42.092979431152344
+                    },
+                    "PriAxis1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 1.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.8700932188051489,
+                        "Y": -0.030784074100839352,
+                        "Z": 0.4919249245271574
+                    },
+                    "SecAxis1": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.4928791415426638,
+                        "Y": 0.04863556657676708,
+                        "Z": -0.8687374364535717
+                    },
+                    "Swing1LimitDegrees": 6.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 20.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 6.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        }
+    ],
+    "Properties": {},
+    "Version": 3
+}

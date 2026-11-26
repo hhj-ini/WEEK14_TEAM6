@@ -1,0 +1,1634 @@
+{
+    "Bodies": [
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -1.9046794176101685,
+                            "Y": -0.0026352405548095703,
+                            "Z": 0.21509695053100586
+                        },
+                        "Length": 2.9883422374725344,
+                        "Radius": 3.6831523418426513,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.0,
+                            "Y": 0.7071067811865476,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "koshi",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 12.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 0.7440849542617798,
+                            "Y": -0.012585163116455078,
+                            "Z": -0.12229156494140625
+                        },
+                        "Length": 1.0842275619506836,
+                        "Radius": 2.7612462043762207,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "hara2",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 8.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 0.9304904937744141,
+                            "Y": 0.0000026226043701171875,
+                            "Z": 0.8825645446777344
+                        },
+                        "Length": 1.8751098155975336,
+                        "Radius": 2.4669870615005496,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "mune",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 8.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -2.0317821502685547,
+                            "Y": -0.019045472145080566,
+                            "Z": 0.732780933380127
+                        },
+                        "Length": 0.839443254470825,
+                        "Radius": 1.3056416273117066,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "kubi2",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 2.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 1.430617332458496,
+                            "Y": -0.00013631582260131836,
+                            "Z": -1.0763554573059082
+                        },
+                        "Length": 1.324002742767334,
+                        "Radius": 2.524188280105591,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.0,
+                            "Y": 0.7071067811865476,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "atama",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 4.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -1.349456787109375,
+                            "Y": -0.6011074185371399,
+                            "Z": 0.09195852279663086
+                        },
+                        "Length": 1.2207507848739625,
+                        "Radius": 0.3377849578857422,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.7071067811865476,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "l ude1",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 0.6,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -1.031682014465332,
+                            "Y": -1.3958269357681274,
+                            "Z": 0.11985588073730469
+                        },
+                        "Length": 1.356421136856079,
+                        "Radius": 0.651280689239502,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.7071067811865476,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "l ude2",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 0.4,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -1.3494606018066406,
+                            "Y": 0.5967511534690857,
+                            "Z": 0.09196138381958008
+                        },
+                        "Length": 1.2152840852737428,
+                        "Radius": 0.3377849578857422,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.7071067811865476,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "r ude1",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 0.6,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -1.0316886901855469,
+                            "Y": 1.394853949546814,
+                            "Z": 0.1198587417602539
+                        },
+                        "Length": 1.3560921192169189,
+                        "Radius": 0.651280689239502,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.7071067811865476,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "r ude2",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 0.4,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -0.4867898225784302,
+                            "Y": 0.006077766418457031,
+                            "Z": -0.10998392105102539
+                        },
+                        "Length": 1.2326098442077633,
+                        "Radius": 2.4747180461883547,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.0,
+                            "Y": 0.7071067811865476,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "l momo",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 6.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -1.8022401332855225,
+                            "Y": -0.3925604820251465,
+                            "Z": -2.060457229614258
+                        },
+                        "Length": 0.5328474044799805,
+                        "Radius": 1.7427492141723633,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.0,
+                            "Y": 0.7071067811865476,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "l sune",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 3.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 0.02413386106491089,
+                            "Y": -0.39870917797088623,
+                            "Z": -1.2640442848205566
+                        },
+                        "Length": 2.61010103225708,
+                        "Radius": 1.881442701816559,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.0,
+                            "Y": 0.7071067811865476,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "l ashi1",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 1.5,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -0.4867894649505615,
+                            "Y": -0.006070971488952637,
+                            "Z": -0.10998678207397461
+                        },
+                        "Length": 1.2326107978820797,
+                        "Radius": 2.4747180461883547,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.0,
+                            "Y": 0.7071067811865476,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "r momo",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 6.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -1.8022366762161255,
+                            "Y": 0.36868441104888916,
+                            "Z": -2.060457229614258
+                        },
+                        "Length": 0.5328471660614014,
+                        "Radius": 1.7427492141723633,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.0,
+                            "Y": 0.7071067811865476,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "r sune",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 3.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": 0.024138808250427246,
+                            "Y": 0.39824652671813965,
+                            "Z": -1.2640442848205566
+                        },
+                        "Length": 2.609254169464111,
+                        "Radius": 1.881865954399109,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.0,
+                            "Y": 0.7071067811865476,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "r ashi1",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 1.5,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -3.452674388885498,
+                            "Y": -0.011623464524745941,
+                            "Z": -0.3880443572998047
+                        },
+                        "Length": 2.257437515258789,
+                        "Radius": 2.106558895111084,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.0,
+                            "Y": 0.7071067811865476,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "tail1",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 4.0,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -3.6599950790405273,
+                            "Y": 0.10786078125238419,
+                            "Z": -1.1961517333984375
+                        },
+                        "Length": 0.65781135559082,
+                        "Radius": 1.7617744445800783,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.0,
+                            "Y": 0.7071067811865476,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "tail2",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 2.5,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -2.9212818145751953,
+                            "Y": 0.240800179541111,
+                            "Z": -1.1699519157409668
+                        },
+                        "Length": 0.35035266876220694,
+                        "Radius": 1.3790305137634278,
+                        "Rotation": {
+                            "W": 1.0,
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "tail3",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 1.5,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        },
+        {
+            "AggGeom": {
+                "Box": [],
+                "Convexes": [],
+                "Sphere": [],
+                "Spyls": [
+                    {
+                        "Center": {
+                            "X": -1.9060487747192383,
+                            "Y": -1.1152728199958801,
+                            "Z": -0.5291168689727783
+                        },
+                        "Length": 0.9353532075881958,
+                        "Radius": 0.5410843849182129,
+                        "Rotation": {
+                            "W": 0.7071067811865476,
+                            "X": 0.7071067811865476,
+                            "Y": 0.0,
+                            "Z": 0.0
+                        }
+                    }
+                ]
+            },
+            "BoneName": "tail4",
+            "Properties": {
+                "DefaultInstance": {
+                    "AngularDamping": 0.6,
+                    "CollisionEnabled": "QueryAndPhysics",
+                    "LinearDamping": 0.08,
+                    "MassInKgOverride": 0.8,
+                    "Mobility": "Movable",
+                    "ObjectType": "WorldDynamic",
+                    "PhysMaterialOverride": null,
+                    "bDrivable": false,
+                    "bSimulatePhysics": false,
+                    "bUseCCD": false
+                },
+                "PhysicsType": "Default"
+            }
+        }
+    ],
+    "CollisionDisable": [
+        {
+            "A": "hara2",
+            "B": "koshi"
+        },
+        {
+            "A": "mune",
+            "B": "hara2"
+        },
+        {
+            "A": "kubi2",
+            "B": "mune"
+        },
+        {
+            "A": "atama",
+            "B": "kubi2"
+        },
+        {
+            "A": "l ude1",
+            "B": "mune"
+        },
+        {
+            "A": "l ude2",
+            "B": "l ude1"
+        },
+        {
+            "A": "r ude1",
+            "B": "mune"
+        },
+        {
+            "A": "r ude2",
+            "B": "r ude1"
+        },
+        {
+            "A": "l momo",
+            "B": "koshi"
+        },
+        {
+            "A": "l sune",
+            "B": "l momo"
+        },
+        {
+            "A": "l ashi1",
+            "B": "l sune"
+        },
+        {
+            "A": "r momo",
+            "B": "koshi"
+        },
+        {
+            "A": "r sune",
+            "B": "r momo"
+        },
+        {
+            "A": "r ashi1",
+            "B": "r sune"
+        },
+        {
+            "A": "tail1",
+            "B": "koshi"
+        },
+        {
+            "A": "tail2",
+            "B": "tail1"
+        },
+        {
+            "A": "tail3",
+            "B": "tail2"
+        },
+        {
+            "A": "tail4",
+            "B": "tail3"
+        }
+    ],
+    "Constraints": [
+        {
+            "Bone1": "hara2",
+            "Bone2": "koshi",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 3.4605236053466797,
+                        "Y": 0.0,
+                        "Z": 0.4380025863647461
+                    },
+                    "PriAxis1": {
+                        "X": 0.9780786418724908,
+                        "Y": 0.0,
+                        "Z": 0.20823585261156186
+                    },
+                    "PriAxis2": {
+                        "X": 0.9780786418724908,
+                        "Y": 0.0,
+                        "Z": 0.20823585261156186
+                    },
+                    "SecAxis1": {
+                        "X": 0.20823585261156186,
+                        "Y": 0.0,
+                        "Z": -0.9780786418724908
+                    },
+                    "SecAxis2": {
+                        "X": 0.20823585261156186,
+                        "Y": 0.0,
+                        "Z": -0.9780786418724908
+                    },
+                    "Swing1LimitDegrees": 12.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 15.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 8.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "mune",
+            "Bone2": "hara2",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 3.1703875064849854,
+                        "Y": 0.0,
+                        "Z": 0.6749849319458008
+                    },
+                    "PriAxis1": {
+                        "X": 0.9548879966900783,
+                        "Y": 8.78789720030204e-8,
+                        "Z": 0.29696618288485555
+                    },
+                    "PriAxis2": {
+                        "X": 0.9548879966900783,
+                        "Y": 8.78789720030204e-8,
+                        "Z": 0.29696618288485555
+                    },
+                    "SecAxis1": {
+                        "X": 0.2969661828848567,
+                        "Y": -3.308722450212111e-24,
+                        "Z": -0.9548879966900821
+                    },
+                    "SecAxis2": {
+                        "X": 0.2969661828848567,
+                        "Y": -3.308722450212111e-24,
+                        "Z": -0.9548879966900821
+                    },
+                    "Swing1LimitDegrees": 12.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 15.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 8.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "kubi2",
+            "Bone2": "mune",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 3.662604808807373,
+                        "Y": 0.0,
+                        "Z": 4.086813926696777
+                    },
+                    "PriAxis1": {
+                        "X": -0.24229723128853528,
+                        "Y": 0.0,
+                        "Z": 0.9702020674632218
+                    },
+                    "PriAxis2": {
+                        "X": -0.3259338989770189,
+                        "Y": 0.0,
+                        "Z": 0.9453925605258582
+                    },
+                    "SecAxis1": {
+                        "X": 0.9702020674632218,
+                        "Y": 0.0,
+                        "Z": 0.24229723128853528
+                    },
+                    "SecAxis2": {
+                        "X": 0.9453925605258582,
+                        "Y": 0.0,
+                        "Z": 0.3259338989770189
+                    },
+                    "Swing1LimitDegrees": 25.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 30.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 20.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "atama",
+            "Bone2": "kubi2",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.7588062286376953,
+                        "Y": 0.0,
+                        "Z": 3.038397789001465
+                    },
+                    "PriAxis1": {
+                        "X": -0.24229723128853534,
+                        "Y": 0.0,
+                        "Z": 0.970202067463222
+                    },
+                    "PriAxis2": {
+                        "X": -0.3259338989770189,
+                        "Y": 0.0,
+                        "Z": 0.9453925605258584
+                    },
+                    "SecAxis1": {
+                        "X": 0.970202067463222,
+                        "Y": 0.0,
+                        "Z": 0.24229723128853534
+                    },
+                    "SecAxis2": {
+                        "X": 0.9453925605258584,
+                        "Y": 0.0,
+                        "Z": 0.3259338989770189
+                    },
+                    "Swing1LimitDegrees": 25.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 30.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 20.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "l ude1",
+            "Bone2": "mune",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 2.3503031730651855,
+                        "Y": -2.246474266052246,
+                        "Z": -0.143096923828125
+                    },
+                    "PriAxis1": {
+                        "X": -0.13566376057026316,
+                        "Y": -0.9907549364337956,
+                        "Z": 0.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.12538511655208986,
+                        "Y": -0.9921081455905999,
+                        "Z": 0.0
+                    },
+                    "SecAxis1": {
+                        "X": 0.9907549364337956,
+                        "Y": -0.13566376057026316,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.9921081455905999,
+                        "Y": 0.12538511655208986,
+                        "Z": 0.0
+                    },
+                    "Swing1LimitDegrees": 45.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 45.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 25.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "l ude2",
+            "Bone2": "l ude1",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.21262264251708984,
+                        "Y": -1.5527870655059814,
+                        "Z": 0.0
+                    },
+                    "PriAxis1": {
+                        "X": -0.13566376057026316,
+                        "Y": -0.9907549364337956,
+                        "Z": 0.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.532920527457945,
+                        "Y": -0.8461652979258518,
+                        "Z": 0.0
+                    },
+                    "SecAxis1": {
+                        "X": 0.9907549364337956,
+                        "Y": -0.13566376057026316,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": 0.8461652979258518,
+                        "Y": 0.532920527457945,
+                        "Z": 0.0
+                    },
+                    "Swing1LimitDegrees": 0.0,
+                    "Swing1Motion": "Locked",
+                    "Swing2LimitDegrees": 50.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 0.0,
+                    "TwistMotion": "Locked"
+                }
+            }
+        },
+        {
+            "Bone1": "r ude1",
+            "Bone2": "mune",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 2.350306987762451,
+                        "Y": 2.2464792728424072,
+                        "Z": -0.14309978485107422
+                    },
+                    "PriAxis1": {
+                        "X": -0.1356621731580166,
+                        "Y": 0.9907551537963578,
+                        "Z": 0.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.12538670613214653,
+                        "Y": 0.9921079446941904,
+                        "Z": 0.0
+                    },
+                    "SecAxis1": {
+                        "X": -0.9907551537963578,
+                        "Y": -0.1356621731580166,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": -0.9921079446941904,
+                        "Y": 0.12538670613214653,
+                        "Z": 0.0
+                    },
+                    "Swing1LimitDegrees": 45.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 45.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 25.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "r ude2",
+            "Bone2": "r ude1",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.21261978149414062,
+                        "Y": 1.5527846813201904,
+                        "Z": 0.0
+                    },
+                    "PriAxis1": {
+                        "X": -0.1356621731580166,
+                        "Y": 0.9907551537963578,
+                        "Z": 0.0
+                    },
+                    "PriAxis2": {
+                        "X": 0.5329218832042373,
+                        "Y": 0.8461644440663112,
+                        "Z": 0.0
+                    },
+                    "SecAxis1": {
+                        "X": -0.9907551537963578,
+                        "Y": -0.1356621731580166,
+                        "Z": 0.0
+                    },
+                    "SecAxis2": {
+                        "X": -0.8461644440663112,
+                        "Y": 0.5329218832042373,
+                        "Z": 0.0
+                    },
+                    "Swing1LimitDegrees": 0.0,
+                    "Swing1Motion": "Locked",
+                    "Swing2LimitDegrees": 50.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 0.0,
+                    "TwistMotion": "Locked"
+                }
+            }
+        },
+        {
+            "Bone1": "l momo",
+            "Bone2": "koshi",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 0.31382429599761963,
+                        "Y": -4.468784809112549,
+                        "Z": 0.9297990798950195
+                    },
+                    "PriAxis1": {
+                        "X": 0.661755529015513,
+                        "Y": -0.0671396091916322,
+                        "Z": -0.7467073675108565
+                    },
+                    "PriAxis2": {
+                        "X": 0.9713407367876595,
+                        "Y": -0.054997548122089505,
+                        "Z": -0.23124109227679557
+                    },
+                    "SecAxis1": {
+                        "X": -0.7483960552946027,
+                        "Y": -6.93889390390723e-18,
+                        "Z": -0.6632520971843797
+                    },
+                    "SecAxis2": {
+                        "X": -0.23348278056407207,
+                        "Y": -0.03850969777813834,
+                        "Z": -0.9715980621414937
+                    },
+                    "Swing1LimitDegrees": 28.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 60.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 12.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "l sune",
+            "Bone2": "l momo",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 2.3389159440994263,
+                        "Y": -0.23729896545410156,
+                        "Z": -2.6391706466674805
+                    },
+                    "PriAxis1": {
+                        "X": -0.18106607800857863,
+                        "Y": -0.16797740563641472,
+                        "Z": -0.9690194356101692
+                    },
+                    "PriAxis2": {
+                        "X": -0.8231097173129158,
+                        "Y": -0.1187779626116322,
+                        "Z": -0.5553216985341752
+                    },
+                    "SecAxis1": {
+                        "X": -0.9829868475364314,
+                        "Y": -3.4694469519536134e-18,
+                        "Z": 0.18367595806307524
+                    },
+                    "SecAxis2": {
+                        "X": -0.5670436141074793,
+                        "Y": 0.11877796261163225,
+                        "Z": 0.815078729508848
+                    },
+                    "Swing1LimitDegrees": 0.0,
+                    "Swing1Motion": "Locked",
+                    "Swing2LimitDegrees": 55.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 0.0,
+                    "TwistMotion": "Locked"
+                }
+            }
+        },
+        {
+            "Bone1": "l ashi1",
+            "Bone2": "l sune",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.8124938011169434,
+                        "Y": -0.7537612915039062,
+                        "Z": -4.348259449005127
+                    },
+                    "PriAxis1": {
+                        "X": -0.18106607800857863,
+                        "Y": -0.16797740563641472,
+                        "Z": -0.9690194356101692
+                    },
+                    "PriAxis2": {
+                        "X": -0.18106607800857863,
+                        "Y": -0.16797740563641472,
+                        "Z": -0.9690194356101692
+                    },
+                    "SecAxis1": {
+                        "X": -0.9829868475364314,
+                        "Y": 0.0,
+                        "Z": 0.18367595806307524
+                    },
+                    "SecAxis2": {
+                        "X": -0.9829868475364314,
+                        "Y": 0.0,
+                        "Z": 0.18367595806307524
+                    },
+                    "Swing1LimitDegrees": 12.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 25.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 6.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "r momo",
+            "Bone2": "koshi",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 0.3138244152069092,
+                        "Y": 4.468780517578125,
+                        "Z": 0.9298019409179688
+                    },
+                    "PriAxis1": {
+                        "X": 0.6617545732478777,
+                        "Y": 0.0671397463719624,
+                        "Z": -0.7467082022066103
+                    },
+                    "PriAxis2": {
+                        "X": 0.9713404376847062,
+                        "Y": 0.05499766049363744,
+                        "Z": -0.2312423219454222
+                    },
+                    "SecAxis1": {
+                        "X": -0.7483968988021605,
+                        "Y": 0.0,
+                        "Z": -0.6632511453916297
+                    },
+                    "SecAxis2": {
+                        "X": -0.23348401973080668,
+                        "Y": 0.03850977646154327,
+                        "Z": -0.9715977612403326
+                    },
+                    "Swing1LimitDegrees": 28.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 60.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 12.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "r sune",
+            "Bone2": "r momo",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": 2.3389124870300293,
+                        "Y": 0.23729944229125977,
+                        "Z": -2.6391735076904297
+                    },
+                    "PriAxis1": {
+                        "X": -0.1810664154378898,
+                        "Y": 0.16797646654757084,
+                        "Z": -0.9690195353483162
+                    },
+                    "PriAxis2": {
+                        "X": -0.8231099146248841,
+                        "Y": 0.11877729857554258,
+                        "Z": -0.5553215481046204
+                    },
+                    "SecAxis1": {
+                        "X": -0.982986789148382,
+                        "Y": 6.938893903907228e-18,
+                        "Z": 0.18367627054073876
+                    },
+                    "SecAxis2": {
+                        "X": -0.5670433342223395,
+                        "Y": -0.1187772985755426,
+                        "Z": 0.815079020989443
+                    },
+                    "Swing1LimitDegrees": 0.0,
+                    "Swing1Motion": "Locked",
+                    "Swing2LimitDegrees": 55.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 0.0,
+                    "TwistMotion": "Locked"
+                }
+            }
+        },
+        {
+            "Bone1": "r ashi1",
+            "Bone2": "r sune",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -0.812495231628418,
+                        "Y": 0.7537569999694824,
+                        "Z": -4.348259449005127
+                    },
+                    "PriAxis1": {
+                        "X": -0.1810664154378898,
+                        "Y": 0.16797646654757084,
+                        "Z": -0.9690195353483162
+                    },
+                    "PriAxis2": {
+                        "X": -0.1810664154378898,
+                        "Y": 0.16797646654757084,
+                        "Z": -0.9690195353483162
+                    },
+                    "SecAxis1": {
+                        "X": -0.982986789148382,
+                        "Y": 3.469446951953615e-18,
+                        "Z": 0.18367627054073876
+                    },
+                    "SecAxis2": {
+                        "X": -0.982986789148382,
+                        "Y": 3.469446951953615e-18,
+                        "Z": 0.18367627054073876
+                    },
+                    "Swing1LimitDegrees": 12.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 25.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 6.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "tail1",
+            "Bone2": "koshi",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -5.412454843521118,
+                        "Y": 0.11108525842428207,
+                        "Z": -0.7432126998901367
+                    },
+                    "PriAxis1": {
+                        "X": -0.9523025052768812,
+                        "Y": -0.0019569183790287075,
+                        "Z": -0.3051493223224222
+                    },
+                    "PriAxis2": {
+                        "X": -0.9286965627878923,
+                        "Y": -0.0019521514242117673,
+                        "Z": -0.37083538581258874
+                    },
+                    "SecAxis1": {
+                        "X": -0.3051499066132727,
+                        "Y": 0.0,
+                        "Z": 0.9523043287174069
+                    },
+                    "SecAxis2": {
+                        "X": -0.3708358414833549,
+                        "Y": -0.0001365077255261123,
+                        "Z": 0.9286984225446778
+                    },
+                    "Swing1LimitDegrees": 25.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 22.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 8.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "tail2",
+            "Bone2": "tail1",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -5.180608749389648,
+                        "Y": -0.010645806789398193,
+                        "Z": -1.660038948059082
+                    },
+                    "PriAxis1": {
+                        "X": -0.8445898838801975,
+                        "Y": 0.13170014090319593,
+                        "Z": -0.518963390744774
+                    },
+                    "PriAxis2": {
+                        "X": -0.8060133528386138,
+                        "Y": 0.1313793259791817,
+                        "Z": -0.5771325218276238
+                    },
+                    "SecAxis1": {
+                        "X": -0.5235234892656305,
+                        "Y": 6.938893903907227e-18,
+                        "Z": 0.8520112418196952
+                    },
+                    "SecAxis2": {
+                        "X": -0.5811638244174209,
+                        "Y": 0.009186937421011399,
+                        "Z": 0.8137347291159076
+                    },
+                    "Swing1LimitDegrees": 25.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 22.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 8.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "tail3",
+            "Bone2": "tail2",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -4.140734672546387,
+                        "Y": 0.6456806436181068,
+                        "Z": -2.544299602508545
+                    },
+                    "PriAxis1": {
+                        "X": -0.755646573187459,
+                        "Y": 0.12094903203900811,
+                        "Z": -0.6437154558334587
+                    },
+                    "PriAxis2": {
+                        "X": -0.708570449975424,
+                        "Y": 0.12065440627583818,
+                        "Z": -0.6952484675767723
+                    },
+                    "SecAxis1": {
+                        "X": -0.6484761013629036,
+                        "Y": -6.93889390390723e-18,
+                        "Z": 0.7612350136200838
+                    },
+                    "SecAxis2": {
+                        "X": -0.6996076865146678,
+                        "Y": 0.008436977977806431,
+                        "Z": 0.7144773630929091
+                    },
+                    "Swing1LimitDegrees": 25.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 22.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 8.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        },
+        {
+            "Bone1": "tail4",
+            "Bone2": "tail3",
+            "Properties": {
+                "DefaultInstance": {
+                    "Pos1": {
+                        "X": 0.0,
+                        "Y": 0.0,
+                        "Z": 0.0
+                    },
+                    "Pos2": {
+                        "X": -2.8478384017944336,
+                        "Y": 0.45582592487335205,
+                        "Z": -2.4259986877441406
+                    },
+                    "PriAxis1": {
+                        "X": -0.7556465731874588,
+                        "Y": 0.12094903203900809,
+                        "Z": -0.6437154558334586
+                    },
+                    "PriAxis2": {
+                        "X": -0.7085704499754241,
+                        "Y": 0.12065440627583818,
+                        "Z": -0.6952484675767723
+                    },
+                    "SecAxis1": {
+                        "X": -0.6484761013629036,
+                        "Y": -6.938893903907228e-18,
+                        "Z": 0.7612350136200838
+                    },
+                    "SecAxis2": {
+                        "X": -0.6996076865146676,
+                        "Y": 0.008436977977806433,
+                        "Z": 0.714477363092909
+                    },
+                    "Swing1LimitDegrees": 25.0,
+                    "Swing1Motion": "Limited",
+                    "Swing2LimitDegrees": 22.0,
+                    "Swing2Motion": "Limited",
+                    "TwistLimitDegrees": 8.0,
+                    "TwistMotion": "Limited"
+                }
+            }
+        }
+    ],
+    "Properties": {},
+    "Version": 3
+}
