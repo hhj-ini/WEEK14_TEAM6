@@ -475,3 +475,4 @@ Tools/SnowMountain/build_snow_mountain.py
 # Bundled PhysX / NvCloth SDK binaries. The [Dd]ebug/ and [Rr]elease/ rules above would otherwise hide lib/x64/<config>/.
 !/Source/ThirdParty/PhysX/4.1/lib/**
 !/Source/ThirdParty/NvCloth/1.1.6/lib/**
+!Source/ThirdParty/FBX/lib/**
