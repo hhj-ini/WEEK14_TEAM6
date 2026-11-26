@@ -158,6 +158,56 @@ function ConfigureNvClothLink()
 	filter {}
 end
 
+-- RecastNavigation 1.6.0은 저장소에 포함한 정적 링크 SDK를 사용한다.
+-- Debug는 RecastNavigation debug 빌드(/MDd, -d 접미사), Release·Shipping은 release 빌드(/MD)를 쓴다.
+local RecastRoot = path.join(ProjectRoot, "Source/ThirdParty/RecastNavigation/1.6.0")
+local RecastLibNames = { "Recast", "Detour", "DetourCrowd", "DetourTileCache", "DebugUtils" }
+local function RecastConfigDir(Config)
+	return (Config == "Debug") and "debug" or "release"
+end
+local function RecastLibsForConfig(Config)
+	local Suffix = (Config == "Debug") and "-d.lib" or ".lib"
+	local Libs = {}
+	for _, Name in ipairs(RecastLibNames) do
+		table.insert(Libs, Name .. Suffix)
+	end
+	return Libs
+end
+if _ACTION then
+	if not os.isfile(path.join(RecastRoot, "include/recastnavigation/Recast.h")) then
+		error("Bundled RecastNavigation SDK file is missing: include/recastnavigation/Recast.h")
+	end
+	for _, Config in ipairs({ "Debug", "Release" }) do
+		local SdkConfig = RecastConfigDir(Config)
+		for _, File in ipairs(RecastLibsForConfig(Config)) do
+			if not os.isfile(path.join(RecastRoot, "lib/x64", SdkConfig, File)) then
+				error("Bundled RecastNavigation SDK file is missing: lib/x64/" .. SdkConfig .. "/" .. File)
+			end
+		end
+	end
+end
+
+function ConfigureRecastHeaders()
+	includedirs
+	{
+		path.join(RecastRoot, "include"),
+		path.join(RecastRoot, "include/recastnavigation"),
+	}
+	filter "configurations:Release or Shipping"
+		defines { "RC_DISABLE_ASSERTS" }
+	filter {}
+end
+
+function ConfigureRecastLink()
+	for _, Config in ipairs({ "Debug", "Release", "Shipping" }) do
+		local SdkLibDir = path.join(RecastRoot, "lib/x64", RecastConfigDir(Config))
+		filter ("configurations:" .. Config)
+			libdirs { SdkLibDir }
+			links (RecastLibsForConfig(Config))
+	end
+	filter {}
+end
+
 IncludeDir = {}
 IncludeDir["ImGui"] = ProjectRoot .. "/Source/ThirdParty/ImGui"
 IncludeDir["ImGuiNodeEditor"] = ProjectRoot .. "/Source/ThirdParty/ImGuiNodeEditor"
@@ -280,6 +330,7 @@ project "KurisuEngine"
 	}
 	ConfigurePhysXHeaders()
 	ConfigureNvClothHeaders()
+	ConfigureRecastHeaders()
 
 	-- Lua는 엔진에 포함한다. 인터프리터/컴파일러 실행 파일의 main은 제외한다.
 	files { "%{IncludeDir.lua}/*.h", "%{IncludeDir.lua}/*.c" }
@@ -336,8 +387,10 @@ project "KurisuEditor"
 	links { "KurisuEngine" }
 	ConfigurePhysXHeaders()
 	ConfigureNvClothHeaders()
+	ConfigureRecastHeaders()
 	ConfigurePhysXLink()
 	ConfigureNvClothLink()
+	ConfigureRecastLink()
 
 	-- ImGui와 NodeEditor는 에디터에서만 컴파일하고 엔진 PCH를 사용하지 않는다.
 	files
@@ -427,8 +480,10 @@ function ConfigureGameRuntime()
 	links { "KurisuEngine" }
 	ConfigurePhysXHeaders()
 	ConfigureNvClothHeaders()
+	ConfigureRecastHeaders()
 	ConfigurePhysXLink()
 	ConfigureNvClothLink()
+	ConfigureRecastLink()
 
 	-- 에디터와 같은 이유로 엔진 .obj를 직접 링크한다. 게임 코드는 라이트 액터 등을 직접 참조하지 않아 특히 빠지기 쉽다.
 	ConfigureSourceLink()
