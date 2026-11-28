@@ -30,6 +30,8 @@
 #include "Asset/AssetUtils.h"
 #include "Physics/PhysicsAsset.h"
 #include "Physics/PhysicsAssetFile.h"
+#include "Asset/LandscapeHeightmap.h"
+#include "stb_image.h"   // 구현(STB_IMAGE_IMPLEMENTATION)은 ImageLoader.cpp에 있다
 
 #include "Render/ImageLoader.h"
 #include "Asset/AssetLoadProfiler.h"
@@ -554,6 +556,11 @@ void UAssetManager::Shutdown()
 		delete Pair.second;
 	}
 	Get().PhysicalMaterialMap.Empty();
+	for (auto& Pair : Get().LandscapeHeightmapMap)
+	{
+		delete Pair.second;
+	}
+	Get().LandscapeHeightmapMap.Empty();
 }
 
 
@@ -1273,5 +1280,45 @@ UPhysicsAsset* UAssetManager::LoadPhysicsAsset(const FString& Path)
 	}
 
 	Get().PhysicsAssetMap[Key] = Asset;
+	return Asset;
+}
+
+ULandscapeHeightmap* UAssetManager::LoadLandscapeHeightmap(const FString& Path)
+{
+	const FString Key = FAssetUtils::GetAssetKey(Path);
+	if (ULandscapeHeightmap** Found = Get().LandscapeHeightmapMap.Find(Key))
+		return *Found;   // 이미 읽은 하이트맵은 캐시에서 돌려준다
+
+	const FString FilePath = FAssetUtils::ResolveAssetFilePath(Path);
+	const FString& OpenPath = FilePath.empty() ? Path : FilePath;
+
+	int W = 0, H = 0, Channels = 0;
+	// 16비트로 읽는다. 마지막 인자 1 = 회색 1채널로 강제
+	stbi_us* Pixels = stbi_load_16(OpenPath.c_str(), &W, &H, &Channels, 1);
+	if (!Pixels)
+	{
+		KRS_LOG(Warning, "Failed to load landscape heightmap: {} ({})", Path, stbi_failure_reason());
+		return nullptr;
+	}
+
+	ULandscapeHeightmap* Asset = NewObject<ULandscapeHeightmap>();
+	Asset->SetPath(Key);
+
+	FTerrainData& D = Asset->Data;
+	D.SizeX = W;
+	D.SizeY = H;
+	D.Heights.SetNum(W * H);
+	memcpy(D.Heights.GetData(), Pixels, sizeof(uint16) * W * H);
+	stbi_image_free(Pixels);   // stb가 malloc한 메모리라 직접 해제
+
+	uint16 MinH = 65535, MaxH = 0;
+	for (int32 i = 0; i < W * H; ++i)
+	{
+		MinH = (std::min)(MinH, D.Heights[i]);
+		MaxH = (std::max)(MaxH, D.Heights[i]);
+	}
+	KRS_LOG(Info, "Landscape heightmap {}: {}x{} (ch {}), min {} max {}", Path, W, H, Channels, MinH, MaxH);
+
+	Get().LandscapeHeightmapMap[Key] = Asset;
 	return Asset;
 }

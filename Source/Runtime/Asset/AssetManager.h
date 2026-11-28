@@ -24,6 +24,7 @@ class USoundWave;
 class UAnimSequence;
 class UBlendSpace1D;
 class UParticleSystem;
+class ULandscapeHeightmap;
 struct FSkeletalMaterialSlot;
 
 namespace fs = std::filesystem;
@@ -96,6 +97,8 @@ public:
 	static UParticleSystem* LoadParticleSystem(const FString& Path);
 	static class UPhysicalMaterial* LoadPhysicalMaterial(const FString& Path);
 	static class UPhysicsAsset* LoadPhysicsAsset(const FString& Path);
+	// 16비트 그레이 PNG 하이트맵을 FTerrainData로 읽는다. png가 Texture(8비트)로 스캔되므로 GetAssetByPath 대신 이걸 쓴다.
+	static ULandscapeHeightmap* LoadLandscapeHeightmap(const FString& Path);
 
 	// 원본 좌표축이 엔진과 다른 메시를 로드 후 돌린다 (정점·법선·AABB·삼각형 BVH·GPU 정점 버퍼를 다시 만든다).
 	// Rotate는 회전(길이·손잡이 보존)이어야 한다.
@@ -118,6 +121,7 @@ private:
 	TMap<FString, UParticleSystem*> ParticleSystemMap;
 	TMap<FString, class UPhysicalMaterial*> PhysicalMaterialMap;
 	TMap<FString, class UPhysicsAsset*> PhysicsAssetMap;
+	TMap<FString, ULandscapeHeightmap*> LandscapeHeightmapMap;
 
 	//TMap<FString, UStaticMesh*> MeshMap;	// KEY: FILE NAME OR 쉐입 첫글자 대문자
 	TMap<FString, TUniquePtr<FShader>> ShaderMap;	// KEY: FILE NAME

@@ -368,7 +368,7 @@ VS_OUT Uber_VS(FVertexFactoryInput Input)
         const uint Bone = (uint)(ShadowFlags.y - 0.5f);   // 본 번호 + 1로 실은 값을 되돌린다
         Output.BoneWeight = GpuSkinWeightForBone(Input.BlendIndices, Input.BlendWeights, Bone);
 #else
-        Output.BoneWeight = Input.Color.r;
+        Output.BoneWeight = VF.Color.r;
 #endif
     }
     else if (ShadowFlags.y < -0.5f)
@@ -379,8 +379,8 @@ VS_OUT Uber_VS(FVertexFactoryInput Input)
         Output.Color.a = (Paint.SimIndex > 0u) ? 1.0f : 0.0f;
         Output.BoneWeight = Paint.BlendWeight;
 #else
-        Output.Color.a = Input.Color.a;
-        Output.BoneWeight = Input.Color.r;
+        Output.Color.a = VF.Color.a;
+        Output.BoneWeight = VF.Color.r;
 #endif
     }
     Output.UV = VF.UV * UVTransform.zw + UVTransform.xy;

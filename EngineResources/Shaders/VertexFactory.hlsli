@@ -31,6 +31,8 @@ FVFIntermediates VF_LocalToWorld(float3 Position, float3 Normal, float4 Tangent,
     #include "VF_GpuSkin.hlsli"
 #elif VF_MESH_PARTICLE
     #include "VF_MeshParticle.hlsli"
+#elif VF_LANDSCAPE
+    #include "VF_Landscape.hlsli"
 #else
     #include "VF_Local.hlsli"
 #endif
