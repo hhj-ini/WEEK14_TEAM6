@@ -232,6 +232,23 @@ void FMaterialDetailsPanel::DrawContent()
 				bModified = true;
 			}
 
+			// Terrain Splat (켜면 Parameters의 텍스처 칸이 SplatMap + 레이어 4장으로 바뀐다)
+			DrawPropRowLabel("Terrain Splat");
+			if (ImGui::Checkbox("##TerrainSplat", &Material->bUseTerrainSplat))
+			{
+				bModified = true;
+			}
+
+			if (Material->bUseTerrainSplat)
+			{
+				DrawPropRowLabel("Terrain Tile Scale");
+				ImGui::SetNextItemWidth(-1.0f);
+				if (ImGui::DragFloat("##TerrainTileScale", &Material->TerrainTileScale, 0.01f, 0.001f, 100.0f, "%.3f"))
+				{
+					bModified = true;
+				}
+			}
+
 			// Opacity Mask Clip Value (Masked일 때만 활성화)
 			DrawPropRowLabel("Opacity Mask Clip Value");
 			ImGui::BeginDisabled(!Material->IsMasked());
@@ -284,11 +301,23 @@ void FMaterialDetailsPanel::DrawContent()
 				bModified = true;
 			}
 
-			// Base Color Texture (Albedo)
-			bModified |= DrawMaterialTextureRow("Base Color Texture", "BaseColorTex", Material, 0);
+			if (Material->bUseTerrainSplat)
+			{
+				// Terrain Splat 모드: 0번 = SplatMap, 2~5번 = 레이어 albedo. 1번(노멀맵)은 Splat UV로 늘어나 붙으므로 숨긴다.
+				bModified |= DrawMaterialTextureRow("Splat Map", "TerrainSplatTex", Material, 0);
+				bModified |= DrawMaterialTextureRow("Layer R (Grass)", "TerrainLayerR", Material, 2);
+				bModified |= DrawMaterialTextureRow("Layer G (Dirt)", "TerrainLayerG", Material, 3);
+				bModified |= DrawMaterialTextureRow("Layer B (Rock)", "TerrainLayerB", Material, 4);
+				bModified |= DrawMaterialTextureRow("Layer A (Sand)", "TerrainLayerA", Material, 5);
+			}
+			else
+			{
+				// Base Color Texture (Albedo)
+				bModified |= DrawMaterialTextureRow("Base Color Texture", "BaseColorTex", Material, 0);
 
-			// Normal Map
-			bModified |= DrawMaterialTextureRow("Normal Map", "NormalTex", Material, 1);
+				// Normal Map
+				bModified |= DrawMaterialTextureRow("Normal Map", "NormalTex", Material, 1);
+			}
 
 			// Flip Normal Y
 			DrawPropRowLabel("Flip Normal Y");

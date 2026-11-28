@@ -1,6 +1,7 @@
 #include "EnginePCH.h"
 #include "Landscape/LandscapeActor.h"
 #include "Landscape/LandscapeComponent.h"
+#include "Landscape/LandscapeCollisionComponent.h"
 #include "Landscape/LandscapeSharedBuffers.h"
 #include "Asset/AssetManager.h"
 #include "Asset/LandscapeHeightmap.h"
@@ -124,6 +125,9 @@ void ALandscapeActor::BuildLandscape()
 	// 7. 로컬 (칸 번호, 0~1 높이) → 월드 cm
 	ApplyComponentTransforms();
 
+	// 8. 지형 전체 충돌 하나. TerrainData를 다 채운 뒤라야 하이트필드를 만들 수 있다
+	UpdateCollision();
+
 	bLandscapeBuilt = true;
 	KRS_LOG(Info, "Landscape built: {} ({}x{} vertices, {}x{} components, {})",
 		HeightmapPath, TerrainData.SizeX, TerrainData.SizeY, NumX, NumY, bReuse ? "reused" : "created");
@@ -159,19 +163,45 @@ bool ALandscapeActor::CanReuseComponents(int32 NumComponents) const
 	return Alive == NumComponents;
 }
 
+void ALandscapeActor::UpdateCollision()
+{
+	// Details 트리의 Delete 등으로 지워졌으면 들고 있는 포인터가 죽어 있으므로 목록에서 다시 확인한다
+	ULandscapeCollisionComponent* Existing = nullptr;
+	for (UActorComponent* Component : Components)
+	{
+		if (Component == CollisionComponent)
+		{
+			Existing = CollisionComponent;
+			break;
+		}
+	}
+
+	if (Existing)
+	{
+		Existing->RecreateCollision();   // 컴포넌트는 그대로 두고 하이트필드만 새로 만든다
+		return;
+	}
+
+	// AddComponent가 바로 등록하고, 등록 시 OnCreatePhysicsState가 하이트필드를 만든다
+	CollisionComponent = Cast<ULandscapeCollisionComponent>(
+		AddComponent(ULandscapeCollisionComponent::StaticClass(), FName("None")));
+}
+
 void ALandscapeActor::ReleaseLandscape()
 {
 	// 내가 만든 것뿐 아니라 복제·옛 씬에서 따라온 조각까지 모두 지운다
 	TArray<UActorComponent*> ToRemove;
 	for (UActorComponent* Component : Components)
 	{
-		if (Cast<ULandscapeComponent>(Component))
+		if (Cast<ULandscapeComponent>(Component) || Cast<ULandscapeCollisionComponent>(Component))
 			ToRemove.Add(Component);
 	}
+	// 충돌 컴포넌트는 등록 해제 때 하이트필드를 푼다. TerrainData를 비우기 전에 지운다
 	for (UActorComponent* Component : ToRemove)
 		DestroyComponent(Component);
 
 	LandscapeComponents.Reset();
+	CollisionComponent = nullptr;
 	SharedBuffers.reset();   // 프록시가 아직 쥐고 있으면 마지막 프록시가 사라질 때 풀린다
 	TerrainData = FTerrainData();
 	bLandscapeBuilt = false;
@@ -196,7 +226,7 @@ void ALandscapeActor::Serialize(FStructuredArchive::FRecord Record)
 		Components.Reset();
 		for (UActorComponent* Component : AllComponents)
 		{
-			if (!Cast<ULandscapeComponent>(Component))
+			if (!Cast<ULandscapeComponent>(Component) && !Cast<ULandscapeCollisionComponent>(Component))
 				Components.Add(Component);
 		}
 		Super::Serialize(Record);
@@ -239,5 +269,7 @@ void ALandscapeActor::PostEditChangeProperty(const FProperty& Property)
 		TerrainData.CellSize = CellSize;
 		TerrainData.HeightScale = HeightScale;
 		ApplyComponentTransforms();
+		// 임시: 스케일 갱신 함수가 생기기 전까지는 하이트필드를 다시 만든다 (드래그 중 매 프레임 쿠킹)
+		UpdateCollision();
 	}
 }

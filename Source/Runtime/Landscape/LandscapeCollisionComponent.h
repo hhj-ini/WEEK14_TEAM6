@@ -4,14 +4,14 @@
 #include "Landscape/LandscapeCollision.h"
 #include "LandscapeCollisionComponent.generated.h"
 
-class ALandscape;
+class ALandscapeActor;
 
 UCLASS()
 class ULandscapeCollisionComponent : public UPrimitiveComponent
 {
 	GENERATED_BODY()
 public:
-	ALandscape* GetLandscape() const;
+	ALandscapeActor* GetLandscape() const;
 
 	void RecreateCollision();
 	bool HasCollision() const { return LandscapeCollision.IsValid(); }

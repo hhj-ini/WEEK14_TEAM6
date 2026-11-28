@@ -1,14 +1,14 @@
 #include "EnginePCH.h"
 #include "Landscape/LandscapeCollisionComponent.h"
 
-#include "Landscape/Landscape.h"
+#include "Landscape/LandscapeActor.h"
 #include "Terrain/TerrainData.h"
 #include "Engine/World.h"
 #include "Physics/PhysScene.h"
 
-ALandscape* ULandscapeCollisionComponent::GetLandscape() const
+ALandscapeActor* ULandscapeCollisionComponent::GetLandscape() const
 {
-	return Cast<ALandscape>(GetOwner());
+	return Cast<ALandscapeActor>(GetOwner());
 }
 
 void ULandscapeCollisionComponent::RecreateCollision()
@@ -27,7 +27,7 @@ bool ULandscapeCollisionComponent::ShouldCreatePhysicsState() const
 	if (!Scene || !Scene->IsValid())
 		return false;
 
-	const ALandscape* Landscape = GetLandscape();
+	const ALandscapeActor* Landscape = GetLandscape();
 	if (!Landscape)
 		return false;
 
@@ -39,7 +39,7 @@ void ULandscapeCollisionComponent::OnCreatePhysicsState()
 {
 	UActorComponent::OnCreatePhysicsState();
 
-	const ALandscape* Landscape = GetLandscape();
+	const ALandscapeActor* Landscape = GetLandscape();
 	if (!Landscape)
 		return;
 
