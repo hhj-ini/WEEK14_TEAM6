@@ -29,4 +29,6 @@ public:
 
 	FPrimitiveSceneProxy* CreateSceneProxy() override;
 	FBox CalcLocalBounds() const override;
+
+	UMaterial* GetLandscapeMaterial() const;
 };

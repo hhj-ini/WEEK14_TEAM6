@@ -24,10 +24,9 @@ void FLandscapeComponentSceneProxy::UpdateRenderState()
 	// 그림자 패스는 RenderState가 있는 프록시만 본다. 섹션은 비워 두고 GetDynamicMeshElements로 그린다
 	RenderState = std::make_shared<FMeshRenderState>();
 
-	if (!Material)
-		Material = UAssetManager::GetAssetByPath<UMaterial>("DefaultMaterial");
-
 	const ULandscapeComponent* Component = static_cast<const ULandscapeComponent*>(GetComponent());
+	Material = Component->GetLandscapeMaterial();	// Component 기준으로 Material 세팅
+
 	const ALandscapeActor* LandscapeActor = Component->GetLandscapeActor();
 	if (!LandscapeActor || Component->SectionBaseX < 0 || Component->SectionBaseY < 0)
 		return;   // AddComponent 직후, 아직 배치 전

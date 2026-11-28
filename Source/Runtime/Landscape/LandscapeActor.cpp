@@ -272,4 +272,11 @@ void ALandscapeActor::PostEditChangeProperty(const FProperty& Property)
 		// 임시: 스케일 갱신 함수가 생기기 전까지는 하이트필드를 다시 만든다 (드래그 중 매 프레임 쿠킹)
 		UpdateCollision();
 	}
+	else if (Property.Name == "LandscapeMaterial")
+	{
+		for (ULandscapeComponent* Component : LandscapeComponents)
+		{
+			if (Component)	Component->MarkRenderStateDirty();			// LandScapeMaterial 변경시 Dirty Flag 켜기
+		}
+	}
 }

@@ -2,6 +2,7 @@
 
 #include "GameFramework/Actor.h"
 #include "Terrain/TerrainData.h"
+#include "Render/Material.h" 
 #include "LandscapeActor.generated.h"
 
 class ULandscapeComponent;
@@ -43,6 +44,8 @@ public:
 	// 하이트맵 값 65535일 때의 높이 (cm)
 	UPROPERTY(EditAnywhere)
 	float HeightScale = 2560.0f;
+	UPROPERTY(EditAnywhere)
+	UMaterial* LandscapeMaterial = nullptr;
 
 private:
 	// CellSize·HeightScale만 바뀌었을 때: 컴포넌트 트랜스폼만 다시 계산한다
