@@ -91,6 +91,9 @@ public:
 
 	bool bIsInstance = false;
 
+	bool bUseTerrainSplat = false;		// Terrain 전용 Splat Material 설정
+	float TerrainTileScale = 1.0f;		// 월드 1 단위당 LayerTexture 반복 횟수
+
 	// 인스턴스가 복제된 원본. 인스턴스는 경로가 없어서, 저장할 때 원본을 따라가 기준 에셋을 찾는다
 	const UMaterial* Parent = nullptr;
 

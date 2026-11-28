@@ -123,6 +123,9 @@ void UMaterial::CopyPropertiesFrom(const UMaterial& Source)
 	Shininess = Source.Shininess;
 	UVScrollSpeed = Source.UVScrollSpeed;
 	bFlipNormalY = Source.bFlipNormalY;
+
+	bUseTerrainSplat = Source.bUseTerrainSplat;
+	TerrainTileScale = Source.TerrainTileScale;
 }
 
 void UMaterial::SyncLegacyStates()
@@ -321,6 +324,17 @@ void UMaterial::Serialize(FStructuredArchive::FRecord Record)
 	if (TOptional<FStructuredArchive::FSlot> ClipSlot = Record.TryEnterField("OpacityMaskClipValue", true))
 	{
 		ClipSlot.GetValue() << OpacityMaskClipValue;
+	}
+
+	// 지형 Splat 설정. 지형 머티리얼일 때만 저장하고, 키가 없는 옛 .mat은 기본값을 유지한다.
+	if (TOptional<FStructuredArchive::FSlot> TerrainSplatSlot = Record.TryEnterField("TerrainSplat", bUseTerrainSplat))
+	{
+		TerrainSplatSlot.GetValue() << bUseTerrainSplat;
+	}
+
+	if (TOptional<FStructuredArchive::FSlot> TileScaleSlot = Record.TryEnterField("TerrainTileScale", bUseTerrainSplat))
+	{
+		TileScaleSlot.GetValue() << TerrainTileScale;
 	}
 
 	// ── 파라미터 ──

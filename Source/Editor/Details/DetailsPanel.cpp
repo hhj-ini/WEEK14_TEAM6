@@ -2158,8 +2158,20 @@ namespace
 				ImGui::Indent();
 				if (BeginPropertyGridTable("MaterialProperties"))
 				{
-					DrawMaterialTextureSlot(MeshComponent, Slot, 0, "Texture", Effective, Override);
-					DrawMaterialTextureSlot(MeshComponent, Slot, 1, "Normal Map", Effective, Override);
+					if (Effective && Effective->bUseTerrainSplat)
+					{
+						// Terrain Splat 머티리얼: 0번 = SplatMap, 2~5번 = 레이어 albedo (1번 노멀맵은 숨김)
+						DrawMaterialTextureSlot(MeshComponent, Slot, 0, "Splat Map", Effective, Override);
+						DrawMaterialTextureSlot(MeshComponent, Slot, 2, "Layer R (Grass)", Effective, Override);
+						DrawMaterialTextureSlot(MeshComponent, Slot, 3, "Layer G (Dirt)", Effective, Override);
+						DrawMaterialTextureSlot(MeshComponent, Slot, 4, "Layer B (Rock)", Effective, Override);
+						DrawMaterialTextureSlot(MeshComponent, Slot, 5, "Layer A (Sand)", Effective, Override);
+					}
+					else
+					{
+						DrawMaterialTextureSlot(MeshComponent, Slot, 0, "Texture", Effective, Override);
+						DrawMaterialTextureSlot(MeshComponent, Slot, 1, "Normal Map", Effective, Override);
+					}
 
 					ImGui::TableNextRow();
 
@@ -3894,8 +3906,21 @@ namespace
 							});
 						ImGui::PopID();
 					};
-					DrawTexRow(0, "Texture");
-					DrawTexRow(1, "Normal Map");
+					UMaterial* FirstSlotMat = MeshComps[0]->GetMaterial(Slot);
+					if (FirstSlotMat && FirstSlotMat->bUseTerrainSplat)
+					{
+						// Terrain Splat 머티리얼: 0번 = SplatMap, 2~5번 = 레이어 albedo (1번 노멀맵은 숨김)
+						DrawTexRow(0, "Splat Map");
+						DrawTexRow(2, "Layer R (Grass)");
+						DrawTexRow(3, "Layer G (Dirt)");
+						DrawTexRow(4, "Layer B (Rock)");
+						DrawTexRow(5, "Layer A (Sand)");
+					}
+					else
+					{
+						DrawTexRow(0, "Texture");
+						DrawTexRow(1, "Normal Map");
+					}
 
 					UMaterial* FirstEff = MeshComps[0]->GetMaterial(Slot);
 					const FVector4 FirstColor = FirstEff ? FirstEff->BaseColor : FVector4(1, 1, 1, 1);
