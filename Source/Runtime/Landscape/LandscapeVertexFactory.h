@@ -17,15 +17,19 @@ inline constexpr uint32 LandscapeParamsSlot = 4;
 class FLandscapeVertexFactory : public FVertexFactory
 {
 public:
+
 	void Init(FVertexBuffer* VB, FIndexBuffer* IB, FTexture2D* InHeightmap)
 	{
 		VertexBuffer = VB;
 		IndexBuffer = IB;
 		HeightmapTexture = InHeightmap;
+		if (!ParamsBuffer) ParamsBuffer = RenderCommand::CreateConstantBuffer(ParamsBuffer.get()->GetBufferSize());
 	}
+
 	EVertexFactoryType GetType() const override { return EVertexFactoryType::Landscape; }
 	void Bind() const override;
 
 private:
 	FTexture2D* HeightmapTexture = nullptr;
+	TUniquePtr<FConstantBuffer> ParamsBuffer;
 };
