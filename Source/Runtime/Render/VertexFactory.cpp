@@ -43,6 +43,12 @@ namespace
 		{ "INSTANCE_COLOR",     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, offsetof(FParticleMeshInstance, Color),      PerInstance, 1 },
 	};
 
+	// FLandscapeVertex: 격자 좌표 (X, Y)만. 높이는 텍스처에서 읽는다
+	const D3D11_INPUT_ELEMENT_DESC GLandscapeElements[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, PerVertex, 0 },
+	};
+
 	const FVertexFactoryTypeInfo GTypeInfos[] =
 	{
 		{ "Local",          "VF_LOCAL",           GLocalElements },
@@ -50,6 +56,7 @@ namespace
 		{ "MeshParticle",   "VF_MESH_PARTICLE",   GMeshParticleElements },
 		{ "SpriteParticle", "VF_SPRITE_PARTICLE", {} },
 		{ "Trail",          "VF_TRAIL",           {} },
+		{ "Landscape",      "VF_LANDSCAPE",       GLandscapeElements },
 	};
 	static_assert(std::size(GTypeInfos) == static_cast<size_t>(EVertexFactoryType::Count));
 }

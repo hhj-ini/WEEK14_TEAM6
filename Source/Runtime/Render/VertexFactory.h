@@ -11,6 +11,7 @@ class FStructuredBuffer;
 inline constexpr uint32 BoneMatrixBufferSlot = 14;   // GpuSkinCommon.hlsli의 t14
 inline constexpr uint32 ClothMappingBufferSlot = 15; // GpuSkinCommon.hlsli의 t15
 inline constexpr uint32 ClothSimulBufferSlot = 16;   // GpuSkinCommon.hlsli의 t16
+inline constexpr uint32 LandscapeHeightmapSlot = 17; // VF_Landscape.hlsli의 t17
 
 enum class EVertexFactoryType : uint8
 {
@@ -19,6 +20,7 @@ enum class EVertexFactoryType : uint8
 	MeshParticle,
 	SpriteParticle,
 	Trail,
+	Landscape,
 	Count
 };
 
