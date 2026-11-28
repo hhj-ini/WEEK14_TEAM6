@@ -19,7 +19,7 @@
 #include "GameFramework/Actor/MonsterTruckPawn.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/Actor/KurisuCharacter.h"
-#include "Landscape/Landscape.h"
+#include "Landscape/LandscapeActor.h"
 #include "Core/StatOverlay.h"
 #include "Core/Stats/LightweightStats.h"
 #include <algorithm>
@@ -517,7 +517,7 @@ void FViewportsPanel::DrawSpawnMenu(FEditorViewportClient& Client)
     Spawn("Height Fog", AExponentialHeightFogActor::StaticClass());
     Spawn("Particle System", AParticleSystemActor::StaticClass());
     ImGui::SeparatorText("Terrain");
-    Spawn("Landscape", ALandscape::StaticClass());
+    Spawn("Landscape", ALandscapeActor::StaticClass());
     ImGui::EndDisabled();
     if (World) ImGui::TextDisabled("%d actors", World->GetActorNum());
 }

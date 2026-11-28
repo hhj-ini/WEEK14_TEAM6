@@ -1,12 +1,12 @@
 #include "EnginePCH.h"
 #include "Landscape/LandscapeComponent.h"
-#include "Landscape/Landscape.h"
+#include "Landscape/LandscapeActor.h"
 #include "Landscape/LandscapeRender.h"
 #include "Landscape/LandscapeSharedBuffers.h"
 
-ALandscape* ULandscapeComponent::GetLandscape() const
+ALandscapeActor* ULandscapeComponent::GetLandscapeActor() const
 {
-	return Cast<ALandscape>(GetOwner());
+	return Cast<ALandscapeActor>(GetOwner());
 }
 
 FPrimitiveSceneProxy* ULandscapeComponent::CreateSceneProxy()

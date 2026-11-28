@@ -3,7 +3,7 @@
 #include "Components/PrimitiveComponent.h"
 #include "LandscapeComponent.generated.h"
 
-class ALandscape;
+class ALandscapeActor;
 
 // 지형 한 조각 (64x64칸). 컬링·드로우콜의 단위. UE ULandscapeComponent 대응.
 // 위치·크기는 트랜스폼에 담는다: 상대 위치 = 조각 시작점, 상대 스케일 = (CellSize, CellSize, HeightScale).
@@ -25,7 +25,7 @@ public:
 	UPROPERTY()
 	float HeightMax01 = 1.0f;
 
-	ALandscape* GetLandscape() const;
+	ALandscapeActor* GetLandscapeActor() const;
 
 	FPrimitiveSceneProxy* CreateSceneProxy() override;
 	FBox CalcLocalBounds() const override;
