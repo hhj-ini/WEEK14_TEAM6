@@ -1,6 +1,6 @@
 #include "EnginePCH.h"
 #include "Landscape/LandscapeRender.h"
-#include "Landscape/Landscape.h"
+#include "Landscape/LandscapeActor.h"
 #include "Landscape/LandscapeComponent.h"
 #include "Landscape/LandscapeSharedBuffers.h"
 #include "Render/Texture2D.h"
@@ -28,20 +28,20 @@ void FLandscapeComponentSceneProxy::UpdateRenderState()
 		Material = UAssetManager::GetAssetByPath<UMaterial>("DefaultMaterial");
 
 	const ULandscapeComponent* Component = static_cast<const ULandscapeComponent*>(GetComponent());
-	const ALandscape* Landscape = Component->GetLandscape();
-	if (!Landscape || Component->SectionBaseX < 0 || Component->SectionBaseY < 0)
+	const ALandscapeActor* LandscapeActor = Component->GetLandscapeActor();
+	if (!LandscapeActor || Component->SectionBaseX < 0 || Component->SectionBaseY < 0)
 		return;   // AddComponent 직후, 아직 배치 전
 
 	// 같은 조각을 이미 만들었으면 다시 만들지 않는다
-	if (HeightTexture && SharedBuffers == Landscape->GetSharedBuffers()
+	if (HeightTexture && SharedBuffers == LandscapeActor->GetSharedBuffers()
 		&& BuiltBaseX == Component->SectionBaseX && BuiltBaseY == Component->SectionBaseY)
 		return;
 
-	SharedBuffers = Landscape->GetSharedBuffers();
+	SharedBuffers = LandscapeActor->GetSharedBuffers();
 	if (!SharedBuffers || !SharedBuffers->IsValid())
 		return;
 
-	BuildHeightTexture(*Component, Landscape->GetTerrainData());
+	BuildHeightTexture(*Component, LandscapeActor->GetTerrainData());
 	if (!HeightTexture)
 		return;
 
