@@ -8,7 +8,7 @@ class ULandscapeComponent;
 class FLandscapeSharedBuffers;
 
 // 씬에 놓는 지형 전체. UE ALandscape 대응.
-// HeightmapPath의 PNG를 읽어 64x64칸 ULandscapeComponent들로 나눠 깐다.
+// HeightmapPath의 PNG를 읽어 63x63칸 ULandscapeComponent들로 나눠 깐다 (UE 규격, 1009 = 16x63+1).
 // 액터는 위치만 쓴다 (회전·스케일은 1로 둔다. 크기는 CellSize·HeightScale로 정한다).
 UCLASS()
 class ALandscapeActor : public AActor
@@ -34,14 +34,14 @@ public:
 	void RegisterAllComponents() override;
 
 	UPROPERTY(EditAnywhere)
-	FString HeightmapPath = "Terrain/Erangel_1025_L16.png";
+	FString HeightmapPath = "Terrain/Erangel_1009_L16.png";
 	// 정점 사이 거리 (cm)
 	UPROPERTY(EditAnywhere)
 	float CellSize = 100.0f;
 	// 하이트맵 값 65535일 때의 높이 (cm)
 	UPROPERTY(EditAnywhere)
 	float HeightScale = 2560.0f;
-
+		
 private:
 	// CellSize·HeightScale만 바뀌었을 때: 컴포넌트 트랜스폼만 다시 계산한다
 	void ApplyComponentTransforms();
@@ -51,6 +51,7 @@ private:
 	mutable FTerrainData TerrainData;                  // 이 액터의 지형 (에셋 데이터 복사본)
 	TSharedPtr<FLandscapeSharedBuffers> SharedBuffers;
 	TArray<ULandscapeComponent*> LandscapeComponents;
+	mutable bool bWarnedTransform = false;             // 회전·스케일 경고를 한 번만 내려고 둔다
 	bool bLandscapeBuilt = false;                      // 저장하지 않는다. 복제본은 false로 시작해 다시 만든다
 	float AppliedCellSize = 100.0f;                    // 마지막으로 적용한 유효값 (0 이하 입력을 되돌릴 때 쓴다)
 	float AppliedHeightScale = 2560.0f;

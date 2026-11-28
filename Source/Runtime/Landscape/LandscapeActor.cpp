@@ -7,11 +7,26 @@
 #include "UObject/Property.h"
 #include "Serialization/StructuredArchiveSlots.h"
 #include <algorithm>
+#include <cmath>
 
 const FTerrainData& ALandscapeActor::GetTerrainData() const
 {
 	// 에디터에서 액터를 옮겨도 질의 결과가 따라가게 한다
 	TerrainData.Origin = GetActorLocation();
+
+	// FTerrainData는 위치만 안다. 액터를 돌리거나 늘리면 화면의 지형과 B/C/D가 묻는 높이가 어긋난다.
+	// 엔진에 bAbsoluteRotation/Scale이 선언만 있고 쓰이지 않아 막을 수 없으므로 경고만 한 번 낸다
+	const FRotator Rotation = GetActorRotation();
+	const FVector Scale = GetActorScale3D();
+	const bool bIdentity =
+		std::abs(Rotation.Pitch) < 0.01f && std::abs(Rotation.Yaw) < 0.01f && std::abs(Rotation.Roll) < 0.01f &&
+		std::abs(Scale.X - 1.0f) < 0.001f && std::abs(Scale.Y - 1.0f) < 0.001f && std::abs(Scale.Z - 1.0f) < 0.001f;
+	if (!bIdentity && !bWarnedTransform)
+	{
+		KRS_LOG(Warning, "Landscape: actor rotation/scale is ignored by height queries. "
+			"Keep rotation 0 and scale 1, use CellSize/HeightScale instead");
+	}
+	bWarnedTransform = !bIdentity;   // 다시 0·1로 돌려 놓으면 다음 번에 또 알린다
 	return TerrainData;
 }
 
@@ -55,8 +70,9 @@ void ALandscapeActor::BuildLandscape()
 	}
 	if ((TerrainData.SizeX - 1) % Q != 0 || (TerrainData.SizeY - 1) % Q != 0)
 	{
-		KRS_LOG(Warning, "Landscape: {}x{} is not 64n+1. Edge strip will not be drawn",
-			TerrainData.SizeX, TerrainData.SizeY);
+		// 1025를 넣으면 앞 1009(=16x63+1)만 그리고 끝 16줄은 안 그린다. 1009로 다시 줄인 파일을 쓰면 사라진다
+		KRS_LOG(Warning, "Landscape: {}x{} is not {}n+1. Only {}x{} vertices are drawn",
+			TerrainData.SizeX, TerrainData.SizeY, Q, NumX * Q + 1, NumY * Q + 1);
 	}
 
 	// 4. 조각: 개수가 같으면 그대로 쓰고, 다를 때만 지우고 새로 만든다.
@@ -221,7 +237,7 @@ void ALandscapeActor::PostEditChangeProperty(const FProperty& Property)
 	}
 	else if (Property.Name == "CellSize" || Property.Name == "HeightScale")
 	{
-		// 숫자 칸은 드래그·타이핑 중 매 프레임 바뀐다. 컴포넌트는 건드리지 않고 트랜스폼만 바꾼다
+		// 숫자 칸은 드래그·타이핑 중 매 프레임 바뀐다. 컴포넌트는 지우지 않고 트랜스폼과 텍스처만 바꾼다
 		if (CellSize <= 0.0f)
 			CellSize = AppliedCellSize;
 		if (HeightScale <= 0.0f)
@@ -239,5 +255,9 @@ void ALandscapeActor::PostEditChangeProperty(const FProperty& Property)
 		TerrainData.CellSize = CellSize;
 		TerrainData.HeightScale = HeightScale;
 		ApplyComponentTransforms();
+		// 텍스처의 법선이 월드 비율로 구워져 있으므로 다시 굽게 한다 (UE BGRA8 방식의 비용).
+		// 드래그 중에는 매 프레임 256장을 다시 구우므로 끊길 수 있다
+		for (ULandscapeComponent* Component : LandscapeComponents)
+			Component->MarkRenderStateDirty();
 	}
 }

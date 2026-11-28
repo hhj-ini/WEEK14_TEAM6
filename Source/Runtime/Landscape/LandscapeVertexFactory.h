@@ -4,7 +4,7 @@
 
 class FTexture2D;
 
-// 공유 격자(정점·인덱스) + 컴포넌트 하이트맵 텍스처. UE FLandscapeVertexFactory 대응.
+// 공유 격자(정점·인덱스) + 컴포넌트 하이트맵 텍스처(BGRA8, 밉 6단계). UE FLandscapeVertexFactory 대응.
 // 컴포넌트마다 하나씩 가진다 (버퍼는 같고 텍스처만 다르다).
 class FLandscapeVertexFactory : public FVertexFactory
 {

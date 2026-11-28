@@ -46,6 +46,7 @@
 
 #include "Core/EngineLog.h"
 #include "Core/Stats/LightweightStats.h"
+#include "Landscape/LandscapeStats.h"
 
 #include "Script/LuaScriptManager.h"
 #include <sol/sol.hpp>
@@ -1141,6 +1142,7 @@ void UEditorEngine::Tick(const float DeltaTime)
 	EditorSettings->CaptureViewportSettings();
 	// 프로파일러 반영
 	FStatRegistry::EndFrame();
+	FLandscapeStats::EndFrame();
 
 	EditorManager->LateTick();
 }

@@ -204,7 +204,7 @@ protected:
 	FRotator ViewRotation = FRotator(0.0f, 0.0f, 0.0f);
 	float ViewFOV = 60.0f;
 	float AspectRatio = 1.777778f;
-	float NearClip = 0.1f;
+	float NearClip = 10.0f;   // cm. 0.1이면 8km 지형에서 깊이 정밀도가 모자라 먼 산이 깜빡인다
 	float FarClip = 10000.0f;
 	float OrthoWidth = 10.0f;
 	float MaxRange = 50.0f;

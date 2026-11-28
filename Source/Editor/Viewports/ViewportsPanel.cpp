@@ -27,6 +27,7 @@
 #include "Physics/BodyInstance.h"
 #include "Physics/ConstraintInstance.h"
 #include "Physics/PhysicsStats.h"
+#include "Landscape/LandscapeStats.h"
 
 
 namespace {
@@ -611,6 +612,33 @@ const FRenderStats& Stats = RenderData.RenderStats;
 			}
 			ProfileLines.Add(Line);
 		}
+	}
+
+	if (FStatOverlay::IsEnabled(EStatFlags::Landscape)) {
+		const FLandscapeFrameStats& L = FLandscapeStats::GetLastFrame();
+		const uint32 Total = FLandscapeStats::GetNumComponents();
+
+		Lines.Add({ "Landscape", TitleColor });
+		Lines.Add({ std::format("  Components {} / {} ({:.1f} % culled)", L.DrawnComponents, Total,
+			Total > 0 ? 100.0 * (1.0 - static_cast<double>(L.DrawnComponents) / Total) : 0.0), ValueColor });
+		Lines.Add({ std::format("  Draw Calls {}   Shadow {}", L.DrawnComponents, L.ShadowDraws), ValueColor });
+		Lines.Add({ std::format("  Triangles {}", L.Triangles), ValueColor });
+		FString LODLine = "  LOD";
+		for (int32 LOD = 0; LOD < LandscapeNumLODs; ++LOD)
+			LODLine += std::format("  {}:{}", LOD, L.LODCounts[LOD]);
+		Lines.Add({ LODLine, ValueColor });
+
+		ProfileLines.Add({ "Landscape CPU (ms)", TitleColor, { "Last", "Avg", "Max" } });
+		FProfileStatLine Line{ "  " + FString(LandscapeCycleStats::STAT_LandscapeBakeHeightmap.GetName()), ValueColor };
+		if (const FCycleStatData* D = FStatRegistry::Find(LandscapeCycleStats::STAT_LandscapeBakeHeightmap)) {
+			Line.Values[0] = std::format("{:.2f}", D->GetLastMs());
+			Line.Values[1] = std::format("{:.2f}", D->GetRecentAverageMs());
+			Line.Values[2] = std::format("{:.2f}", D->GetMaxMs());
+		}
+		else {
+			Line.Values[0] = Line.Values[1] = Line.Values[2] = "-";
+		}
+		ProfileLines.Add(Line);
 	}
 
 	if (Lines.Num() == 0 && ProfileLines.Num() == 0)

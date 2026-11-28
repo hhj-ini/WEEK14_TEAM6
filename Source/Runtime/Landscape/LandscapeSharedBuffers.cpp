@@ -7,9 +7,9 @@ FLandscapeSharedBuffers::FLandscapeSharedBuffers(int32 InComponentQuads)
 	: ComponentQuads(InComponentQuads)
 {
 	const int32 Q = ComponentQuads;
-	const int32 Verts = Q + 1;   // 한 변 정점 수 (65)
+	const int32 Verts = Q + 1;   // 한 변 정점 수 (64)
 
-	// 정점: (0,0) ~ (64,64) 격자 좌표
+	// 정점: (0,0) ~ (63,63) 격자 좌표. 63x63칸 = 7,938 삼각형, 인덱스 23,814개
 	TArray<FLandscapeVertex> Vertices;
 	Vertices.SetNum(Verts * Verts);
 	for (int32 IY = 0; IY < Verts; ++IY)
