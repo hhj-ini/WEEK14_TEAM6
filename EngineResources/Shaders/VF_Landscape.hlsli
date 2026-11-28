@@ -3,6 +3,14 @@
 
 #define LANDSCAPE_COMPONENT_QUADS 64.0f
 
+// Splat을 위한 Component의 데이터, 해당 픽셀의 전체 텍스쳐 기준 UV를 계산할때 사용됨 
+cbuffer LandscapeParams : register(b4)
+{
+    float2 LandscapeSectionBase;
+    float2 LandscapeInvTerrainQuads;
+};
+
+
 // R16_UNORM, 67x67 (정점 65x65 + 테두리 1칸). Load 결과가 0~1 실수다
 Texture2D<float> LandscapeHeightmap : register(t17);
 
@@ -33,7 +41,7 @@ FVFIntermediates VF_GetIntermediates(FVertexFactoryInput Input, float4x4 World, 
     // 로컬 법선·접선. NormalMatrix(World의 역전치)가 스케일 차이를 맞춰 월드 법선이 된다
     const float3 LocalNormal = float3(-DhDx, -DhDy, 1.0f);
     const float4 LocalTangent = float4(1.0f, 0.0f, DhDx, 1.0f);
-    const float2 UV = Input.GridXY / LANDSCAPE_COMPONENT_QUADS;
+    const float2 UV = (LandscapeSectionBase + Input.GridXY) * LandscapeInvTerrainQuads;
 
     return VF_LocalToWorld(float3(Input.GridXY, H), LocalNormal, LocalTangent, UV,
         float4(1.0f, 1.0f, 1.0f, 1.0f), World, NormalMatrix);

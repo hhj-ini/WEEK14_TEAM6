@@ -44,7 +44,13 @@ void FLandscapeComponentSceneProxy::UpdateRenderState()
 	if (!HeightTexture)
 		return;
 
-	VertexFactory.Init(SharedBuffers->GetVertexBuffer(), SharedBuffers->GetIndexBuffer(), HeightTexture.get());
+	const FTerrainData& Data = LandscapeActor->GetTerrainData();
+
+	FLandscapeComponentParams Params;	// Splat용 Parameter 세팅
+	Params.SectionBase = FVector2(Component->SectionBaseX, Component->SectionBaseY);
+	Params.InvTerrainQuads = FVector2(1.0f / (Data.SizeX - 1), 1.0f / (Data.SizeY - 1));
+
+	VertexFactory.Init(SharedBuffers->GetVertexBuffer(), SharedBuffers->GetIndexBuffer(), HeightTexture.get(), Params);
 	BuiltBaseX = Component->SectionBaseX;
 	BuiltBaseY = Component->SectionBaseY;
 }

@@ -38,8 +38,6 @@ namespace
 	//격자안에 임의의 지점에 높이를 반환하는 함수
 	float CellHeight(const FTerrainData& D, int32 CX, int32 CY, float FX, float FY, float& OutDZdFX, float& OutDZdFY)
 	{
-		
-
 		const float H00 = VertexZ(D, CX, CY);        // 왼쪽 아래 
 		const float H10 = VertexZ(D, CX + 1, CY);        // X+1      
 		const float H01 = VertexZ(D, CX, CY + 1);    // Y+1       
